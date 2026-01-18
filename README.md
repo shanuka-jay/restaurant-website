@@ -19,10 +19,10 @@ A responsive restaurant website built using HTML, CSS, JavaScript and LocalStora
 - GitHub
 
 ## Team Members
-- Leader: Shanuka
-- Member A: Menu & Food Pages
-- Member B: About & Contact
-- Member C: Services & Signup
+- Shanuka (Leader): Home & Login/Signup Pages
+- Dinesh: Menu & Product Pages
+- Ashini: About & Contact Pages
+- Savindu: Services Pages (Cart,Cheackout,Payment)
 
 ## Development Process
 - GitHub version control
