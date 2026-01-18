@@ -48,7 +48,6 @@ restaurant-website/
 │   │   └── contact.css
 │   │   - Owner: Ashini
 │
-├── assets/
 │   ├── css/   - Shared global styles (Leader only)
 │   ├── js/    - Shared global scripts (Leader only)
 │
