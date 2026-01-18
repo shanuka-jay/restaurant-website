@@ -1,72 +1,61 @@
-# Restaurant Website
+# 🍽️ Restaurant Website
 
 ## Project Description
-A responsive restaurant website built using HTML, CSS, JavaScript and LocalStorage.
+A responsive restaurant website built using **HTML, CSS, JavaScript, and LocalStorage**.  
+This project is developed as a **team-based assignment** following proper GitHub workflow and role separation.
 
-# 🍽️ Restaurant Website – Project Structure & Responsibilities
 
-## 📁 Project Folder Structure
+## 📁 Project Structure & Responsibilities
 
+```txt
 restaurant-website/
 │
 ├── index.html
-│ └── Home Page
-│ ✔ Home layout
-│ ✔ Login & Signup toggle (single page)
-│ ✔ JavaScript & CSS logic
-│ 👤 Owner: Leader – Shanuka
+│   └── Home Page
+│      - Login & Signup toggle (single page)
+│      - JavaScript & CSS handled by Leader
+│      - Owner: Shanuka
 │
 ├── pages/
-│ ├── login/
-│ │ ├── login.html
-│ │ ├── signup.html
-│ │ └── login.css
-│ │ 👤 Owner: Leader – Shanuka
+│   ├── login/
+│   │   ├── login.html
+│   │   ├── signup.html
+│   │   └── login.css
+│   │   - Owner: Shanuka
 │
-│ ├── menu/
-│ │ ├── menu.html
-│ │ └── menu.css
-│ │ 👤 Owner: Dinesh
-│ │ ✔ Menu Page
-│ │ ✔ Product Page
+│   ├── menu/
+│   │   ├── menu.html
+│   │   └── menu.css
+│   │   - Menu & Product pages
+│   │   - Owner: Dinesh
 │
-│ ├── services/
-│ │ ├── services.html
-│ │ ├── cart.html
-│ │ ├── checkout.html
-│ │ ├── payment.html
-│ │ └── order-success.html
-│ │ 👤 Owner: Savindu
-│ │ ✔ Services
-│ │ ✔ Cart
-│ │ ✔ Checkout
-│ │ ✔ Payment
-│ │ ✔ Order Success Page
+│   ├── services/
+│   │   ├── services.html
+│   │   ├── cart.html
+│   │   ├── checkout.html
+│   │   ├── payment.html
+│   │   └── order-success.html
+│   │   - Services, Cart, Checkout, Payment, Order Success
+│   │   - Owner: Savindu
 │
-│ ├── about/
-│ │ ├── about.html
-│ │ └── about.css
-│ │ 👤 Owner: Ashini
+│   ├── about/
+│   │   ├── about.html
+│   │   └── about.css
+│   │   - Owner: Ashini
 │
-│ ├── contact/
-│ │ ├── contact.html
-│ │ └── contact.css
-│ │ 👤 Owner: Ashini
+│   ├── contact/
+│   │   ├── contact.html
+│   │   └── contact.css
+│   │   - Owner: Ashini
 │
 ├── assets/
-│ ├── css/
-│ │ └── Shared global styles
-│ │ ⚠️ Leader only
-│ │
-│ ├── js/
-│ │ └── Shared global scripts
-│ │ ⚠️ Leader only
+│   ├── css/   - Shared global styles (Leader only)
+│   ├── js/    - Shared global scripts (Leader only)
+│   └── images/
 │
-├── README.md
+└── README.md
 
-
----
-
+'''
 ## Pages
 - Home
 - Login & Sign Up
