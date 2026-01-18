@@ -51,11 +51,11 @@ restaurant-website/
 ├── assets/
 │   ├── css/   - Shared global styles (Leader only)
 │   ├── js/    - Shared global scripts (Leader only)
-│   └── images/
 │
 └── README.md
 
-'''
+```
+
 ## Pages
 - Home
 - Login & Sign Up
@@ -90,8 +90,6 @@ restaurant-website/
 - Do **NOT** push directly to `main`
 - Always push to your own branch and create a Pull Request
 - Any violation may cause merge conflicts and rejection
-
----
 
 ## 👑 Team Leader
 **Shanuka**  
