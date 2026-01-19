@@ -90,6 +90,4 @@ restaurant-website/
 - Always push to your own branch and create a Pull Request
 - Any violation may cause merge conflicts and rejection
 
-## 👑 Team Leader
-**Shanuka**  
-Responsible for coordination, structure, shared assets, and final merge.
+
