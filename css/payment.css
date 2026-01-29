@@ -1,0 +1,107 @@
+/* Payment Page Styles */
+.payment-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1.5fr 1fr;
+    gap: 40px;
+    align-items: start;
+}
+
+.payment-form {
+    background: var(--white);
+    padding: 40px;
+    border-radius: 8px;
+    box-shadow: 0 5px 30px rgba(0,0,0,0.08);
+}
+
+.payment-form h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    margin-bottom: 25px;
+}
+
+.payment-methods {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 15px;
+    margin-bottom: 25px;
+}
+
+.payment-method {
+    padding: 20px;
+    border: 2px solid #E8E8E8;
+    border-radius: 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s;
+    background: var(--white);
+}
+
+.payment-method input[type="radio"] {
+    display: none;
+}
+
+.payment-method:hover {
+    border-color: var(--primary-gold);
+}
+
+.payment-method input[type="radio"]:checked + label {
+    border-color: var(--primary-gold);
+    background: rgba(212, 175, 55, 0.1);
+}
+
+.payment-method label {
+    display: block;
+    cursor: pointer;
+    font-size: 16px;
+    font-weight: 600;
+    padding: 20px;
+    margin: -20px;
+    border-radius: 8px;
+}
+
+.payment-method-icon {
+    font-size: 32px;
+    margin-bottom: 10px;
+}
+
+#deliveryAddressDisplay {
+    background: var(--light-gray);
+    padding: 20px;
+    border-radius: 8px;
+    margin-bottom: 25px;
+}
+
+#deliveryAddressDisplay h4 {
+    font-family: 'Playfair Display', serif;
+    font-size: 18px;
+    margin-bottom: 12px;
+}
+
+#deliveryAddressDisplay p {
+    margin-bottom: 5px;
+    color: var(--text-gray);
+}
+
+.card-row {
+    display: grid;
+    grid-template-columns: 2fr 1fr;
+    gap: 20px;
+}
+
+@media (max-width: 1024px) {
+    .payment-container {
+        grid-template-columns: 1fr;
+    }
+}
+
+@media (max-width: 768px) {
+    .payment-methods {
+        grid-template-columns: 1fr;
+    }
+
+    .card-row {
+        grid-template-columns: 1fr;
+    }
+}
