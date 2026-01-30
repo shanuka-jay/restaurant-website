@@ -4,26 +4,25 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Checkout - Bella Cucina</title>
-    <link rel="stylesheet" href="css/styles.css">
-    <link rel="stylesheet" href="css/checkout.css">
+    <link rel="stylesheet" href="checkout.css">
 </head>
 <body>
     <nav id="nav">
         <div class="nav-container">
-            <a href="index.html" class="logo">Bella Cucina</a>
+            <a href="../home/index.html" class="logo">Bella Cucina</a>
             <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="menu.html">Menu</a></li>
-                <li><a href="about.html">About</a></li>
+                <li><a href="../home/index.html">Home</a></li>
+                <li><a href="../menu/menu.html">Menu</a></li>
+                <li><a href="../about/about.html">About</a></li>
                 <li><a href="services.html">Services</a></li>
-                <li><a href="contact.html">Contact</a></li>
+                <li><a href="../contact/contact.html">Contact</a></li>
             </ul>
             <div class="nav-auth">
                 <a href="cart.html" class="auth-icon cart-icon-container" title="Cart">
                     🛒
                     <span class="cart-badge" id="cartCount">0</span>
                 </a>
-                <a href="login.html" class="auth-icon" title="Login">👤</a>
+                <a href="../auth/login.html" class="auth-icon" title="Login">👤</a>
             </div>
         </div>
     </nav>
@@ -118,10 +117,10 @@
             </div>
             <div class="footer-section">
                 <h3>Quick Links</h3>
-                <a href="menu.html">Menu</a>
-                <a href="about.html">About</a>
+                <a href="../menu/menu.html">Menu</a>
+                <a href="../about/about.html">About</a>
                 <a href="services.html">Services</a>
-                <a href="contact.html">Contact</a>
+                <a href="../contact/contact.html">Contact</a>
             </div>
             <div class="footer-section">
                 <h3>Contact</h3>
@@ -135,7 +134,25 @@
         </div>
     </footer>
 
-    <script src="js/script.js"></script>
-    <script src="js/checkout.js"></script>
+    <script>
+        // Cart functions from localStorage
+        let cart = JSON.parse(localStorage.getItem('cart')) || [];
+        
+        function saveCart() {
+            localStorage.setItem('cart', JSON.stringify(cart));
+            updateCartBadge();
+        }
+        
+        function updateCartBadge() {
+            const badge = document.getElementById('cartCount');
+            if (badge) {
+                const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
+                badge.textContent = totalItems;
+            }
+        }
+        
+        updateCartBadge();
+    </script>
+    <script src="checkout.js"></script>
 </body>
 </html>
