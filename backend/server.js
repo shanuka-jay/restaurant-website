@@ -4,6 +4,10 @@ const cors = require("cors");
 const path = require("path");
 const db = require("./config/db");
 
+// Import routes
+const authRoutes = require("./routes/auth.routes");
+const menuRoutes = require("./routes/menu.routes");
+
 // Create Express app
 const app = express();
 const PORT = 3000;
@@ -15,6 +19,10 @@ app.use(express.urlencoded({ extended: true })); // Parse form data
 
 // Serve static files (your frontend)
 app.use(express.static(path.join(__dirname, "../frontend")));
+
+// API Routes
+app.use("/api/auth", authRoutes);
+app.use("/api/menu", menuRoutes);
 
 // Test route - Simple API endpoint to check if server works
 app.get("/api/test", (req, res) => {
