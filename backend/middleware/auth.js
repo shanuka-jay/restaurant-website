@@ -1,44 +1,60 @@
 const jwt = require('jsonwebtoken');
+const { dbGet } = require('../config/database');
 
-// Middleware to verify JWT token
-const authMiddleware = (req, res, next) => {
-  try {
-    // Get token from header
-    const token = req.header('Authorization')?.replace('Bearer ', '');
+// Verify JWT token
+const protect = async (req, res, next) => {
+    let token;
+
+    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+        try {
+            // Get token from header
+            token = req.headers.authorization.split(' ')[1];
+
+            // Verify token
+            const decoded = jwt.verify(token, process.env.JWT_SECRET);
+
+            // Get user from token
+            const user = await dbGet(
+                'SELECT id, firstName, lastName, email, role FROM users WHERE id = ?',
+                [decoded.id]
+            );
+
+            if (!user) {
+                return res.status(401).json({ 
+                    success: false, 
+                    message: 'User not found' 
+                });
+            }
+
+            req.user = user;
+            next();
+        } catch (error) {
+            console.error('Auth middleware error:', error);
+            return res.status(401).json({ 
+                success: false, 
+                message: 'Not authorized, token failed' 
+            });
+        }
+    }
 
     if (!token) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'No authentication token, access denied' 
-      });
+        return res.status(401).json({ 
+            success: false, 
+            message: 'Not authorized, no token' 
+        });
     }
-
-    // Verify token
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    req.user = decoded;
-    next();
-  } catch (error) {
-    res.status(401).json({ 
-      success: false, 
-      message: 'Token is invalid or expired' 
-    });
-  }
 };
 
-// Optional auth - doesn't fail if no token
-const optionalAuth = (req, res, next) => {
-  try {
-    const token = req.header('Authorization')?.replace('Bearer ', '');
-    
-    if (token) {
-      const decoded = jwt.verify(token, process.env.JWT_SECRET);
-      req.user = decoded;
+// Admin role check
+const admin = (req, res, next) => {
+    if (req.user && req.user.role === 'admin') {
+        next();
+    } else {
+        res.status(403).json({ 
+            success: false, 
+            message: 'Not authorized as admin' 
+        });
     }
-    next();
-  } catch (error) {
-    // Continue without user
-    next();
-  }
 };
 
-module.exports = { authMiddleware, optionalAuth };
+module.exports = { protect, admin };
