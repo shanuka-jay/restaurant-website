@@ -44,7 +44,9 @@ document.addEventListener('DOMContentLoaded', async function() {
     
     // Initialize counters
     document.querySelectorAll('.stat-number').forEach(counter => {
-        observer.observe(counter);
+        if (typeof observer !== 'undefined') {
+            observer.observe(counter);
+        }
     });
     
     // Initialize navbar scroll
