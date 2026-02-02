@@ -95,4 +95,47 @@ function formatPrice(price) {
 // Initialize cart on page load
 document.addEventListener("DOMContentLoaded", function () {
   updateCartCount();
+  updateUserDisplay();
 });
+
+// Update user display in navigation
+function updateUserDisplay() {
+  const user = JSON.parse(localStorage.getItem("user"));
+  const authIcons = document.querySelectorAll(".nav-auth a[title='Login']");
+
+  authIcons.forEach((icon) => {
+    if (user) {
+      // User is logged in - show username with dropdown
+      icon.innerHTML = `👤 ${user.name.split(" ")[0]}`;
+      icon.title = "Profile";
+      icon.style.cursor = "pointer";
+
+      // Add click handler for logout
+      icon.onclick = function (e) {
+        e.preventDefault();
+        if (confirm("Do you want to logout?")) {
+          logout();
+        }
+      };
+    } else {
+      // User not logged in - show login link
+      icon.innerHTML = "👤";
+      icon.title = "Login";
+      icon.href = "../auth/login.html";
+      icon.onclick = null;
+    }
+  });
+}
+
+// Logout function
+function logout() {
+  localStorage.removeItem("user");
+  localStorage.removeItem("userId");
+  localStorage.removeItem("userEmail");
+  localStorage.removeItem("userName");
+
+  console.log("👋 User logged out");
+
+  // Redirect to home page
+  window.location.href = "../home/index.html";
+}

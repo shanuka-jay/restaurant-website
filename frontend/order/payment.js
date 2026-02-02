@@ -73,6 +73,10 @@ async function processPayment(event) {
   submitBtn.textContent = "Processing...";
   submitBtn.disabled = true;
 
+  // Get logged-in user ID (default to 1 if not logged in)
+  const userId = parseInt(localStorage.getItem("userId")) || 1;
+  console.log("👤 User ID:", userId);
+
   try {
     console.log("🔄 Creating order...");
 
@@ -80,7 +84,7 @@ async function processPayment(event) {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
-        user_id: 1,
+        user_id: userId,
         items: cart.map((item) => ({
           menu_item_id: parseInt(item.id),
           quantity: item.quantity,

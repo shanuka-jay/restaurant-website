@@ -259,7 +259,7 @@ frontend/
 ### 🚀 Next Steps for Improvement
 
 1. **Add User Authentication UI** - Currently using hardcoded user_id
-2. **Complete User Authentication UI** - Connect login/register pages to backen
+2. **Complete User Authentication UI** - Connect login/register pages to backend
 3. **Real Payment Gateway** - Integrate Stripe/PayPal
 4. **Order Status Updates** - Real-time order tracking
 5. **Image Upload** - Allow admin to upload menu item images
