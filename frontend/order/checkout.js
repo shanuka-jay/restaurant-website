@@ -1,6 +1,15 @@
+// Cart Management
+let cart = JSON.parse(localStorage.getItem('cart')) || [];
+
 // Checkout form handling
 function proceedToPayment(event) {
     event.preventDefault();
+    
+    if (cart.length === 0) {
+        alert('Your cart is empty! Please add items before checking out.');
+        window.location.href = '../menu/menu.html';
+        return;
+    }
     
     const formData = new FormData(event.target);
     const address = {
@@ -13,6 +22,27 @@ function proceedToPayment(event) {
         zipCode: formData.get('zipCode'),
         deliveryNotes: formData.get('deliveryNotes')
     };
+    
+    if (!address.fullName || !address.phone || !address.address || !address.city || !address.state || !address.zipCode) {
+        alert('Please fill in all required fields!');
+        return;
+    }
+    
+    const phoneRegex = /^[\d\s\-\+\(\)]+$/;
+    if (!phoneRegex.test(address.phone)) {
+        alert('Please enter a valid phone number!');
+        return;
+    }
+    
+    if (address.email) {
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+        if (!emailRegex.test(address.email)) {
+            alert('Please enter a valid email address!');
+            return;
+        }
+    }
+    
+    console.log('✅ Delivery info validated:', address);
     
     localStorage.setItem('deliveryAddress', JSON.stringify(address));
     window.location.href = 'payment.html';

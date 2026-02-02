@@ -17,17 +17,35 @@ async function loadMenuFromAPI() {
       foodData = {};
 
       data.items.forEach((item) => {
-        // Create a key from the name (lowercase, remove spaces)
-        const key = item.name.toLowerCase().replace(/\s+/g, "");
-        foodData[key] = {
+        // Create multiple keys for compatibility:
+        // 1. Name-based key (carbonara, lasagna, etc.)
+        const nameKey = item.name.toLowerCase().replace(/\s+/g, "");
+        // 2. Database ID key
+        const dbKey = item.id.toString();
+
+        // Parse ingredients - handle both JSON and comma-separated strings
+        let ingredients = [];
+        if (item.ingredients) {
+          try {
+            ingredients = JSON.parse(item.ingredients);
+          } catch (e) {
+            ingredients = item.ingredients.split(",").map((i) => i.trim());
+          }
+        }
+
+        const itemData = {
           id: item.id,
           name: item.name,
           category: item.category,
           price: item.price,
           image: item.image_url,
           description: item.description,
-          ingredients: item.ingredients ? JSON.parse(item.ingredients) : [],
+          ingredients: ingredients,
         };
+
+        // Store with both keys
+        foodData[nameKey] = itemData;
+        foodData[dbKey] = itemData;
       });
 
       console.log("✅ Menu loaded from API:", data.items.length, "items");
@@ -82,20 +100,29 @@ function saveCart() {
 // Add to Cart
 function addToCart(foodId) {
   const food = foodData[foodId];
-  if (!food) return;
+  if (!food) {
+    console.error("❌ Food not found:", foodId);
+    return;
+  }
 
-  const existingItem = cart.find((item) => item.id === foodId);
+  // Use the numeric database ID from the food object
+  const itemId = food.id;
+
+  const existingItem = cart.find((item) => item.id === itemId);
 
   if (existingItem) {
     existingItem.quantity += currentQuantity;
+    console.log("✅ Updated cart item:", existingItem);
   } else {
-    cart.push({
-      id: foodId,
+    const newItem = {
+      id: itemId,
       name: food.name,
       price: food.price,
       image: food.image,
       quantity: currentQuantity,
-    });
+    };
+    cart.push(newItem);
+    console.log("✅ Added to cart:", newItem);
   }
 
   saveCart();
@@ -346,8 +373,15 @@ document.addEventListener("DOMContentLoaded", async function () {
   await loadMenuFromAPI();
 
   const foodId = getUrlParameter("id");
-  if (foodId && foodData[foodId]) {
-    loadProductDetails(foodId);
+  console.log("🔍 Product ID from URL:", foodId);
+  console.log("📦 Available keys:", Object.keys(foodData));
+
+  if (foodId) {
+    if (foodData[foodId]) {
+      loadProductDetails(foodId);
+    } else {
+      console.error("❌ Product not found for ID:", foodId);
+    }
   }
 
   // Load cart page if on cart page
@@ -364,7 +398,25 @@ function loadProductDetails(foodId) {
   }
 
   const food = foodData[foodId];
-  if (!food) return;
+  if (!food) {
+    console.error("❌ Product not found:", foodId);
+    console.log("Available keys:", Object.keys(foodData));
+
+    // Show error message
+    const contentContainer = document.getElementById("foodDetailContent");
+    if (contentContainer) {
+      contentContainer.innerHTML = `
+        <div style="text-align: center; padding: 60px 20px;">
+          <h3>Product not found</h3>
+          <p>Sorry, the product "${foodId}" could not be loaded.</p>
+          <a href="../menu/menu.html" style="color: var(--primary-gold);">← Back to Menu</a>
+        </div>
+      `;
+    }
+    return;
+  }
+
+  console.log("✅ Loading product:", food.name);
 
   document.title = `${food.name} - Bella Cucina`;
 

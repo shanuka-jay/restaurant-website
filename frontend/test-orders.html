@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order & Payment API Test</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            padding: 20px;
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        h1 {
+            color: white;
+            text-align: center;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.1);
+        }
+        
+        h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            border-bottom: 3px solid #667eea;
+            padding-bottom: 10px;
+        }
+        
+        .form-group {
+            margin-bottom: 15px;
+        }
+        
+        label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        input, textarea, select {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+        
+        input:focus, textarea:focus, select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: 600;
+            transition: transform 0.2s;
+            margin-right: 10px;
+            margin-top: 10px;
+        }
+        
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(102, 126, 234, 0.4);
+        }
+        
+        .result {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            background: #f5f5f5;
+            white-space: pre-wrap;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            max-height: 400px;
+            overflow-y: auto;
+        }
+        
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+        }
+        
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px;
+            background: #f8f9fa;
+            border-radius: 6px;
+            margin-bottom: 10px;
+        }
+        
+        .badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: 600;
+            margin-left: 10px;
+        }
+        
+        .badge.pending { background: #fff3cd; color: #856404; }
+        .badge.confirmed { background: #d1ecf1; color: #0c5460; }
+        .badge.preparing { background: #cce5ff; color: #004085; }
+        .badge.delivered { background: #d4edda; color: #155724; }
+        .badge.cancelled { background: #f8d7da; color: #721c24; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>🛒 Order & Payment API Test</h1>
+        
+        <div class="grid">
+            <!-- CREATE ORDER -->
+            <div class="section">
+                <h2>1. Create Order</h2>
+                <div class="form-group">
+                    <label>User ID</label>
+                    <input type="number" id="createUserId" value="1" placeholder="1">
+                </div>
+                <div class="form-group">
+                    <label>Menu Items (JSON Array)</label>
+                    <textarea id="createOrderItems" rows="5" placeholder='[{"menu_item_id": 1, "quantity": 2, "price": 22}]'>[{"menu_item_id": 1, "quantity": 2, "price": 22}, {"menu_item_id": 3, "quantity": 1, "price": 18}]</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Total Amount</label>
+                    <input type="number" id="createTotalAmount" value="62" placeholder="62.00">
+                </div>
+                <div class="form-group">
+                    <label>Delivery Name</label>
+                    <input type="text" id="createDeliveryName" value="John Doe" placeholder="John Doe">
+                </div>
+                <div class="form-group">
+                    <label>Delivery Phone</label>
+                    <input type="text" id="createDeliveryPhone" value="+1234567890" placeholder="+1234567890">
+                </div>
+                <div class="form-group">
+                    <label>Delivery Address</label>
+                    <textarea id="createDeliveryAddress" rows="2" placeholder="123 Main St, City">123 Main Street, Colombo, Sri Lanka</textarea>
+                </div>
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <select id="createPaymentMethod">
+                        <option value="cash">Cash</option>
+                        <option value="card">Card</option>
+                        <option value="online">Online</option>
+                    </select>
+                </div>
+                <button onclick="createOrder()">Create Order</button>
+                <div id="createOrderResult" class="result" style="display: none;"></div>
+            </div>
+            
+            <!-- GET ORDER BY ID -->
+            <div class="section">
+                <h2>2. Get Order by ID</h2>
+                <div class="form-group">
+                    <label>Order ID</label>
+                    <input type="number" id="getOrderId" placeholder="1">
+                </div>
+                <button onclick="getOrder()">Get Order</button>
+                <div id="getOrderResult" class="result" style="display: none;"></div>
+            </div>
+            
+            <!-- GET USER ORDERS -->
+            <div class="section">
+                <h2>3. Get User Orders</h2>
+                <div class="form-group">
+                    <label>User ID</label>
+                    <input type="number" id="getUserOrdersId" value="1" placeholder="1">
+                </div>
+                <button onclick="getUserOrders()">Get User Orders</button>
+                <div id="getUserOrdersResult" class="result" style="display: none;"></div>
+            </div>
+            
+            <!-- UPDATE ORDER STATUS -->
+            <div class="section">
+                <h2>4. Update Order Status</h2>
+                <div class="form-group">
+                    <label>Order ID</label>
+                    <input type="number" id="updateOrderId" placeholder="1">
+                </div>
+                <div class="form-group">
+                    <label>New Status</label>
+                    <select id="updateOrderStatus">
+                        <option value="pending">Pending</option>
+                        <option value="confirmed">Confirmed</option>
+                        <option value="preparing">Preparing</option>
+                        <option value="out_for_delivery">Out for Delivery</option>
+                        <option value="delivered">Delivered</option>
+                        <option value="cancelled">Cancelled</option>
+                    </select>
+                </div>
+                <button onclick="updateOrderStatus()">Update Status</button>
+                <div id="updateOrderResult" class="result" style="display: none;"></div>
+            </div>
+            
+            <!-- PROCESS PAYMENT -->
+            <div class="section">
+                <h2>5. Process Payment</h2>
+                <div class="form-group">
+                    <label>Order ID</label>
+                    <input type="number" id="paymentOrderId" placeholder="1">
+                </div>
+                <div class="form-group">
+                    <label>Amount</label>
+                    <input type="number" id="paymentAmount" value="62" placeholder="62.00">
+                </div>
+                <div class="form-group">
+                    <label>Payment Method</label>
+                    <select id="paymentMethod">
+                        <option value="card">Card</option>
+                        <option value="cash">Cash</option>
+                        <option value="online">Online</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Card Last 4 Digits (Optional)</label>
+                    <input type="text" id="paymentCardLast4" placeholder="1234" maxlength="4">
+                </div>
+                <button onclick="processPayment()">Process Payment</button>
+                <div id="processPaymentResult" class="result" style="display: none;"></div>
+            </div>
+            
+            <!-- GET PAYMENT BY ORDER -->
+            <div class="section">
+                <h2>6. Get Payment by Order</h2>
+                <div class="form-group">
+                    <label>Order ID</label>
+                    <input type="number" id="getPaymentOrderId" placeholder="1">
+                </div>
+                <button onclick="getPayment()">Get Payment</button>
+                <div id="getPaymentResult" class="result" style="display: none;"></div>
+            </div>
+            
+            <!-- GET ALL ORDERS -->
+            <div class="section">
+                <h2>7. Get All Orders (Admin)</h2>
+                <button onclick="getAllOrders()">Get All Orders</button>
+                <div id="getAllOrdersResult" class="result" style="display: none;"></div>
+            </div>
+            
+            <!-- VERIFY PAYMENT -->
+            <div class="section">
+                <h2>8. Verify Payment</h2>
+                <div class="form-group">
+                    <label>Transaction ID</label>
+                    <input type="text" id="verifyTransactionId" placeholder="TXN1234567890">
+                </div>
+                <button onclick="verifyPayment()">Verify Payment</button>
+                <div id="verifyPaymentResult" class="result" style="display: none;"></div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:3000/api';
+
+        // Create Order
+        async function createOrder() {
+            const resultDiv = document.getElementById('createOrderResult');
+            try {
+                const items = JSON.parse(document.getElementById('createOrderItems').value);
+                
+                const response = await fetch(`${API_BASE}/orders`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        user_id: parseInt(document.getElementById('createUserId').value),
+                        items: items,
+                        total_amount: parseFloat(document.getElementById('createTotalAmount').value),
+                        delivery_name: document.getElementById('createDeliveryName').value,
+                        delivery_phone: document.getElementById('createDeliveryPhone').value,
+                        delivery_address: document.getElementById('createDeliveryAddress').value,
+                        payment_method: document.getElementById('createPaymentMethod').value
+                    })
+                });
+                
+                const data = await response.json();
+                resultDiv.className = 'result ' + (data.success ? 'success' : 'error');
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'Error: ' + error.message;
+                resultDiv.style.display = 'block';
+            }
+        }
+
+        // Get Order by ID
+        async function getOrder() {
+            const resultDiv = document.getElementById('getOrderResult');
+            const orderId = document.getElementById('getOrderId').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/orders/${orderId}`);
+                const data = await response.json();
+                resultDiv.className = 'result ' + (data.success ? 'success' : 'error');
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'Error: ' + error.message;
+                resultDiv.style.display = 'block';
+            }
+        }
+
+        // Get User Orders
+        async function getUserOrders() {
+            const resultDiv = document.getElementById('getUserOrdersResult');
+            const userId = document.getElementById('getUserOrdersId').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/orders/user/${userId}`);
+                const data = await response.json();
+                resultDiv.className = 'result ' + (data.success ? 'success' : 'error');
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'Error: ' + error.message;
+                resultDiv.style.display = 'block';
+            }
+        }
+
+        // Update Order Status
+        async function updateOrderStatus() {
+            const resultDiv = document.getElementById('updateOrderResult');
+            const orderId = document.getElementById('updateOrderId').value;
+            const status = document.getElementById('updateOrderStatus').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/orders/${orderId}/status`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ status })
+                });
+                
+                const data = await response.json();
+                resultDiv.className = 'result ' + (data.success ? 'success' : 'error');
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'Error: ' + error.message;
+                resultDiv.style.display = 'block';
+            }
+        }
+
+        // Process Payment
+        async function processPayment() {
+            const resultDiv = document.getElementById('processPaymentResult');
+            try {
+                const response = await fetch(`${API_BASE}/payments`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        order_id: parseInt(document.getElementById('paymentOrderId').value),
+                        amount: parseFloat(document.getElementById('paymentAmount').value),
+                        payment_method: document.getElementById('paymentMethod').value,
+                        card_last4: document.getElementById('paymentCardLast4').value || null
+                    })
+                });
+                
+                const data = await response.json();
+                resultDiv.className = 'result ' + (data.success ? 'success' : 'error');
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'Error: ' + error.message;
+                resultDiv.style.display = 'block';
+            }
+        }
+
+        // Get Payment by Order
+        async function getPayment() {
+            const resultDiv = document.getElementById('getPaymentResult');
+            const orderId = document.getElementById('getPaymentOrderId').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/payments/order/${orderId}`);
+                const data = await response.json();
+                resultDiv.className = 'result ' + (data.success ? 'success' : 'error');
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'Error: ' + error.message;
+                resultDiv.style.display = 'block';
+            }
+        }
+
+        // Get All Orders
+        async function getAllOrders() {
+            const resultDiv = document.getElementById('getAllOrdersResult');
+            
+            try {
+                const response = await fetch(`${API_BASE}/orders`);
+                const data = await response.json();
+                resultDiv.className = 'result ' + (data.success ? 'success' : 'error');
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'Error: ' + error.message;
+                resultDiv.style.display = 'block';
+            }
+        }
+
+        // Verify Payment
+        async function verifyPayment() {
+            const resultDiv = document.getElementById('verifyPaymentResult');
+            const transactionId = document.getElementById('verifyTransactionId').value;
+            
+            try {
+                const response = await fetch(`${API_BASE}/payments/verify/${transactionId}`);
+                const data = await response.json();
+                resultDiv.className = 'result ' + (data.success ? 'success' : 'error');
+                resultDiv.textContent = JSON.stringify(data, null, 2);
+                resultDiv.style.display = 'block';
+            } catch (error) {
+                resultDiv.className = 'result error';
+                resultDiv.textContent = 'Error: ' + error.message;
+                resultDiv.style.display = 'block';
+            }
+        }
+    </script>
+</body>
+</html>

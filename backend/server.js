@@ -7,6 +7,8 @@ const db = require("./config/db");
 // Import routes
 const authRoutes = require("./routes/auth.routes");
 const menuRoutes = require("./routes/menu.routes");
+const orderRoutes = require("./routes/order.routes");
+const paymentRoutes = require("./routes/payment.routes");
 
 // Create Express app
 const app = express();
@@ -23,6 +25,8 @@ app.use(express.static(path.join(__dirname, "../frontend")));
 // API Routes
 app.use("/api/auth", authRoutes);
 app.use("/api/menu", menuRoutes);
+app.use("/api/orders", orderRoutes);
+app.use("/api/payments", paymentRoutes);
 
 // Test route - Simple API endpoint to check if server works
 app.get("/api/test", (req, res) => {
