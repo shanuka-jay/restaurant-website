@@ -1,222 +1,182 @@
-// shanuka
 const express = require('express');
 const router = express.Router();
-const bcrypt = require('bcryptjs');
-const { body, validationResult } = require('express-validator');
-const db = require('../config/database');
-const { authMiddleware } = require('../middleware/auth');
+const { dbGet, dbAll, dbRun } = require('../config/database');
+const { protect, admin } = require('../middleware/auth');
 
-// @route   GET /api/users/profile
-// @desc    Get user profile
-// @access  Private
-router.get('/profile', authMiddleware, (req, res) => {
-  db.get(
-    'SELECT id, first_name, last_name, email, phone, created_at FROM users WHERE id = ?',
-    [req.user.userId],
-    (err, user) => {
-      if (err) {
-        return res.status(500).json({
-          success: false,
-          message: 'Database error'
-        });
-      }
+// @route   GET /api/users
+// @desc    Get all users (admin)
+// @access  Private/Admin
+router.get('/', protect, admin, async (req, res) => {
+    try {
+        const { role, limit = 50, offset = 0 } = req.query;
 
-      if (!user) {
-        return res.status(404).json({
-          success: false,
-          message: 'User not found'
-        });
-      }
+        let query = 'SELECT id, firstName, lastName, email, phone, role, createdAt FROM users WHERE 1=1';
+        const params = [];
 
-      res.json({
-        success: true,
-        data: {
-          id: user.id,
-          firstName: user.first_name,
-          lastName: user.last_name,
-          email: user.email,
-          phone: user.phone,
-          createdAt: user.created_at
+        if (role) {
+            query += ' AND role = ?';
+            params.push(role);
         }
-      });
+
+        query += ' ORDER BY createdAt DESC LIMIT ? OFFSET ?';
+        params.push(parseInt(limit), parseInt(offset));
+
+        const users = await dbAll(query, params);
+
+        // Get total count
+        const countQuery = role 
+            ? 'SELECT COUNT(*) as count FROM users WHERE role = ?' 
+            : 'SELECT COUNT(*) as count FROM users';
+        const countResult = await dbGet(countQuery, role ? [role] : []);
+
+        res.json({
+            success: true,
+            count: users.length,
+            total: countResult.count,
+            data: users
+        });
+    } catch (error) {
+        console.error('Get users error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error fetching users' 
+        });
     }
-  );
 });
 
-// @route   PUT /api/users/profile
-// @desc    Update user profile
-// @access  Private
-router.put(
-  '/profile',
-  [
-    authMiddleware,
-    body('firstName').optional().trim().notEmpty().withMessage('First name cannot be empty'),
-    body('lastName').optional().trim().notEmpty().withMessage('Last name cannot be empty'),
-    body('phone').optional().trim()
-  ],
-  (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        errors: errors.array()
-      });
-    }
+// @route   GET /api/users/:id
+// @desc    Get user by ID (admin)
+// @access  Private/Admin
+router.get('/:id', protect, admin, async (req, res) => {
+    try {
+        const userId = req.params.id;
 
-    const { firstName, lastName, phone } = req.body;
-    const updates = [];
-    const values = [];
-
-    if (firstName !== undefined) {
-      updates.push('first_name = ?');
-      values.push(firstName);
-    }
-    if (lastName !== undefined) {
-      updates.push('last_name = ?');
-      values.push(lastName);
-    }
-    if (phone !== undefined) {
-      updates.push('phone = ?');
-      values.push(phone);
-    }
-
-    if (updates.length === 0) {
-      return res.status(400).json({
-        success: false,
-        message: 'No fields to update'
-      });
-    }
-
-    updates.push('updated_at = CURRENT_TIMESTAMP');
-    values.push(req.user.userId);
-
-    const sql = `UPDATE users SET ${updates.join(', ')} WHERE id = ?`;
-
-    db.run(sql, values, function (err) {
-      if (err) {
-        return res.status(500).json({
-          success: false,
-          message: 'Error updating profile'
-        });
-      }
-
-      if (this.changes === 0) {
-        return res.status(404).json({
-          success: false,
-          message: 'User not found'
-        });
-      }
-
-      res.json({
-        success: true,
-        message: 'Profile updated successfully'
-      });
-    });
-  }
-);
-
-// @route   PUT /api/users/password
-// @desc    Change password
-// @access  Private
-router.put(
-  '/password',
-  [
-    authMiddleware,
-    body('currentPassword').notEmpty().withMessage('Current password is required'),
-    body('newPassword')
-      .isLength({ min: 6 })
-      .withMessage('New password must be at least 6 characters')
-  ],
-  async (req, res) => {
-    const errors = validationResult(req);
-    if (!errors.isEmpty()) {
-      return res.status(400).json({
-        success: false,
-        errors: errors.array()
-      });
-    }
-
-    const { currentPassword, newPassword } = req.body;
-
-    db.get(
-      'SELECT password_hash FROM users WHERE id = ?',
-      [req.user.userId],
-      async (err, user) => {
-        if (err) {
-          return res.status(500).json({
-            success: false,
-            message: 'Database error'
-          });
-        }
+        const user = await dbGet(
+            'SELECT id, firstName, lastName, email, phone, role, createdAt, updatedAt FROM users WHERE id = ?',
+            [userId]
+        );
 
         if (!user) {
-          return res.status(404).json({
-            success: false,
-            message: 'User not found'
-          });
-        }
-
-        const isMatch = await bcrypt.compare(currentPassword, user.password_hash);
-        if (!isMatch) {
-          return res.status(401).json({
-            success: false,
-            message: 'Current password is incorrect'
-          });
-        }
-
-        const salt = await bcrypt.genSalt(10);
-        const newPasswordHash = await bcrypt.hash(newPassword, salt);
-
-        db.run(
-          'UPDATE users SET password_hash = ?, updated_at = CURRENT_TIMESTAMP WHERE id = ?',
-          [newPasswordHash, req.user.userId],
-          err => {
-            if (err) {
-              return res.status(500).json({
-                success: false,
-                message: 'Error updating password'
-              });
-            }
-
-            res.json({
-              success: true,
-              message: 'Password updated successfully'
+            return res.status(404).json({ 
+                success: false, 
+                message: 'User not found' 
             });
-          }
+        }
+
+        // Get user's order history
+        const orders = await dbAll(
+            'SELECT id, orderNumber, total, status, createdAt FROM orders WHERE userId = ? ORDER BY createdAt DESC',
+            [userId]
         );
-      }
-    );
-  }
-);
 
-// @route   DELETE /api/users/account
-// @desc    Delete user account
-// @access  Private
-router.delete('/account', authMiddleware, (req, res) => {
-  db.run(
-    'DELETE FROM users WHERE id = ?',
-    [req.user.userId],
-    function (err) {
-      if (err) {
-        return res.status(500).json({
-          success: false,
-          message: 'Error deleting account'
+        user.orders = orders;
+
+        res.json({
+            success: true,
+            data: user
         });
-      }
-
-      if (this.changes === 0) {
-        return res.status(404).json({
-          success: false,
-          message: 'User not found'
+    } catch (error) {
+        console.error('Get user error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error fetching user' 
         });
-      }
-
-      res.json({
-        success: true,
-        message: 'Account deleted successfully'
-      });
     }
-  );
+});
+
+// @route   PUT /api/users/:id/role
+// @desc    Update user role (admin)
+// @access  Private/Admin
+router.put('/:id/role', protect, admin, async (req, res) => {
+    try {
+        const { role } = req.body;
+        const userId = req.params.id;
+
+        if (!['customer', 'admin'].includes(role)) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Invalid role' 
+            });
+        }
+
+        const user = await dbGet('SELECT * FROM users WHERE id = ?', [userId]);
+
+        if (!user) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'User not found' 
+            });
+        }
+
+        // Prevent changing own role
+        if (userId == req.user.id) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Cannot change your own role' 
+            });
+        }
+
+        await dbRun(
+            'UPDATE users SET role = ?, updatedAt = CURRENT_TIMESTAMP WHERE id = ?',
+            [role, userId]
+        );
+
+        const updatedUser = await dbGet(
+            'SELECT id, firstName, lastName, email, role FROM users WHERE id = ?',
+            [userId]
+        );
+
+        res.json({
+            success: true,
+            message: 'User role updated successfully',
+            data: updatedUser
+        });
+    } catch (error) {
+        console.error('Update user role error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error updating user role' 
+        });
+    }
+});
+
+// @route   DELETE /api/users/:id
+// @desc    Delete user (admin)
+// @access  Private/Admin
+router.delete('/:id', protect, admin, async (req, res) => {
+    try {
+        const userId = req.params.id;
+
+        const user = await dbGet('SELECT * FROM users WHERE id = ?', [userId]);
+
+        if (!user) {
+            return res.status(404).json({ 
+                success: false, 
+                message: 'User not found' 
+            });
+        }
+
+        // Prevent deleting own account
+        if (userId == req.user.id) {
+            return res.status(400).json({ 
+                success: false, 
+                message: 'Cannot delete your own account' 
+            });
+        }
+
+        await dbRun('DELETE FROM users WHERE id = ?', [userId]);
+
+        res.json({
+            success: true,
+            message: 'User deleted successfully'
+        });
+    } catch (error) {
+        console.error('Delete user error:', error);
+        res.status(500).json({ 
+            success: false, 
+            message: 'Error deleting user' 
+        });
+    }
 });
 
 module.exports = router;
