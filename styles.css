@@ -1269,6 +1269,48 @@ footer {
     }
 }
 
+#authContainer {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.user-name {
+    font-weight: 800;
+    color:  #c2921d;;
+}
+
+.btn-logout {
+    padding: 6px 12px;
+    background: var(--primary-gold);
+    color: white;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.btn-logout:hover {
+    background: #c2921d; /* slightly darker gold */
+}
+
+.login-btn {
+    padding: 6px 12px;
+    border: 1px solid var(--primary-gold);
+    border-radius: 6px;
+    color: var(--primary-gold);
+    text-decoration: none;
+}
+
+.login-btn:hover {
+    background: var(--primary-gold);
+    color: white;
+}
+
+.user-name:hover{
+    color: #c2921d;;
+}
+
 @media (max-width: 768px) {
     .nav-links {
         display: none;

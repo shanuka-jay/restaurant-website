@@ -7,6 +7,7 @@
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
+    <!-- Navbar -->
     <nav id="nav">
         <div class="nav-container">
             <a href="index.html" class="logo">Bella Cucina</a>
@@ -17,7 +18,7 @@
                 <li><a href="services.html">Services</a></li>
                 <li><a href="contact.html">Contact</a></li>
             </ul>
-            <div class="nav-auth">
+            <div class="nav-auth" id="authContainer">
                 <a href="cart.html" class="auth-icon cart-icon-container" title="Cart">
                     🛒
                     <span class="cart-badge" id="cartCount">0</span>
@@ -27,6 +28,7 @@
         </div>
     </nav>
 
+    <!-- Hero Section -->
     <section class="hero" style="height: 40vh; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=1600') center/cover;">
         <div class="hero-content">
             <h1>Shopping Cart</h1>
@@ -34,17 +36,22 @@
         </div>
     </section>
 
+    <!-- Cart Section -->
     <section style="background: var(--light-gray); padding: 80px 40px;">
         <div class="cart-container">
+            <!-- Cart Items -->
             <div class="cart-items" id="cartItems">
-                <!-- Cart items will be inserted here by JavaScript -->
+                <!-- Items added dynamically via script.js -->
             </div>
+
+            <!-- Cart Summary -->
             <div class="cart-summary" id="cartSummary">
-                <!-- Cart summary will be inserted here by JavaScript -->
+                <!-- Summary added dynamically via script.js -->
             </div>
         </div>
     </section>
 
+    <!-- Footer -->
     <footer>
         <div class="footer-content">
             <div class="footer-section">
@@ -70,6 +77,8 @@
         </div>
     </footer>
 
+    <!-- Scripts -->
+    <script src="api-config.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
