@@ -1,126 +1,286 @@
-// Food data
-const foodData = {
-    carbonara: {
-        name: 'Spaghetti Carbonara',
-        category: 'Pasta',
-        price: 22,
-        image: 'https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=800',
-        description: 'A classic Roman pasta dish that combines simple ingredients to create an incredibly rich and creamy sauce. Our Carbonara features perfectly al dente spaghetti tossed with crispy guanciale (Italian cured pork jowl), farm-fresh eggs, aged Pecorino Romano cheese, and freshly cracked black pepper. The heat from the pasta creates a silky, luxurious coating that clings to every strand.',
-        ingredients: ['Spaghetti pasta', 'Guanciale (Italian pork jowl)', 'Fresh eggs', 'Pecorino Romano cheese', 'Black pepper', 'Sea salt']
-    },
-    lasagna: {
-        name: 'Lasagna Bolognese',
-        category: 'Pasta',
-        price: 24,
-        image: 'https://images.unsplash.com/photo-1563379926898-05f4575a45d8?w=800',
-        description: 'Layers upon layers of tender pasta sheets, slow-cooked Bolognese sauce, creamy béchamel, and Parmigiano-Reggiano cheese. Our traditional recipe follows the authentic Bologna style, with a meat sauce that simmers for hours to develop deep, complex flavors.',
-        ingredients: ['Fresh pasta sheets', 'Ground beef and pork', 'San Marzano tomatoes', 'Béchamel sauce', 'Parmigiano-Reggiano', 'Onions, carrots, celery', 'Red wine', 'Fresh herbs']
-    },
-    margherita: {
-        name: 'Margherita Pizza',
-        category: 'Pizza',
-        price: 18,
-        image: 'https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=800',
-        description: 'The queen of pizzas! A perfect harmony of flavors featuring our hand-stretched dough topped with San Marzano tomato sauce, fresh mozzarella di bufala, fragrant basil leaves, and a drizzle of extra virgin olive oil. Baked in our wood-fired oven at 900°F for that perfect char and chew.',
-        ingredients: ['Hand-stretched pizza dough', 'San Marzano tomatoes', 'Fresh mozzarella di bufala', 'Fresh basil', 'Extra virgin olive oil', 'Sea salt']
-    },
-    quattro: {
-        name: 'Quattro Formaggi Pizza',
-        category: 'Pizza',
-        price: 20,
-        image: 'https://images.unsplash.com/photo-1513104890138-7c749659a591?w=800',
-        description: 'A cheese lover\'s dream! This white pizza features four premium Italian cheeses: creamy mozzarella, sharp gorgonzola, nutty fontina, and aged Parmigiano-Reggiano. Each cheese is carefully selected to create a perfect balance of flavors and textures.',
-        ingredients: ['Pizza dough', 'Mozzarella cheese', 'Gorgonzola cheese', 'Fontina cheese', 'Parmigiano-Reggiano', 'Olive oil', 'Fresh herbs']
-    },
-    risotto: {
-        name: 'Mushroom Risotto',
-        category: 'Main Course',
-        price: 24,
-        image: 'https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=800',
-        description: 'Creamy Arborio rice slowly cooked to perfection with porcini mushrooms, white wine, and vegetable stock. Finished with Parmigiano-Reggiano, butter, and a drizzle of white truffle oil for an earthy, luxurious experience. Each grain is perfectly al dente while the dish maintains its signature creamy texture.',
-        ingredients: ['Arborio rice', 'Porcini mushrooms', 'Mixed mushrooms', 'White wine', 'Vegetable stock', 'Parmigiano-Reggiano', 'Butter', 'White truffle oil', 'Shallots', 'Parsley']
-    },
-    ossobuco: {
-        name: 'Osso Buco',
-        category: 'Main Course',
-        price: 32,
-        image: 'https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=800',
-        description: 'A Milanese masterpiece featuring tender veal shanks braised for hours until the meat falls off the bone. Slow-cooked with white wine, aromatics, and vegetables, then topped with fresh gremolata (lemon zest, garlic, and parsley). Traditionally served with creamy saffron risotto.',
-        ingredients: ['Veal shanks', 'White wine', 'Tomatoes', 'Carrots, celery, onions', 'Beef stock', 'Lemon zest', 'Fresh parsley', 'Garlic', 'Olive oil']
-    },
-    tiramisu: {
-        name: 'Tiramisu',
-        category: 'Dessert',
-        price: 12,
-        image: 'https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=800',
-        description: 'The classic Italian pick-me-up! Layers of espresso-soaked ladyfinger cookies and rich mascarpone cream, dusted with premium cocoa powder. Our recipe stays true to the traditional Venetian style, creating the perfect balance of coffee, cream, and sweetness.',
-        ingredients: ['Ladyfinger cookies', 'Mascarpone cheese', 'Espresso', 'Eggs', 'Sugar', 'Cocoa powder', 'Marsala wine']
-    },
-    pannacotta: {
-        name: 'Panna Cotta',
-        category: 'Dessert',
-        price: 10,
-        image: 'https://images.unsplash.com/photo-1488477181946-6428a0291777?w=800',
-        description: 'A silky-smooth Italian dessert that melts in your mouth. Our vanilla-infused cream is gently set with gelatin and served with a vibrant berry compote made from fresh seasonal berries. Light, elegant, and the perfect ending to your meal.',
-        ingredients: ['Heavy cream', 'Vanilla bean', 'Sugar', 'Gelatin', 'Fresh mixed berries', 'Mint leaves']
+// ============================================
+// BELLA CUCINA - Frontend JavaScript
+// Integrated with Backend API
+// ============================================
+
+// Cart Management (using API)
+let cart = [];
+let currentUser = null;
+
+// Initialize on page load
+document.addEventListener('DOMContentLoaded', async function() {
+    // Check if user is logged in
+    await checkAuthStatus();
+    
+    // Load menu items from API
+    if (window.location.pathname.includes('menu.html') || window.location.pathname.includes('index.html')) {
+        await loadMenuFromAPI();
     }
-};
-
-// Cart Management
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
-let currentQuantity = 1;
-
-// Initialize cart count on page load
-document.addEventListener('DOMContentLoaded', function() {
-    updateCartCount();
+    
+    // Load product details if on product page
+    const urlParams = new URLSearchParams(window.location.search);
+    const productId = urlParams.get('id');
+    if (productId && window.location.pathname.includes('product.html')) {
+        await loadProductDetails(productId);
+    }
+    
+    // Load cart if on cart page
+    if (window.location.pathname.includes('cart.html')) {
+        await loadCartPage();
+    }
+    
+    // Load checkout if on checkout page
+    if (window.location.pathname.includes('checkout.html')) {
+        loadCheckoutPage();
+    }
+    
+    // Load payment if on payment page
+    if (window.location.pathname.includes('payment.html')) {
+        loadPaymentPage();
+    }
+    
+    // Update cart count
+    await updateCartCount();
     
     // Initialize counters
     document.querySelectorAll('.stat-number').forEach(counter => {
         observer.observe(counter);
     });
+    
+    // Initialize navbar scroll
+    initNavbarScroll();
 });
 
-// Update cart count in navigation
-function updateCartCount() {
-    const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
+// ============================================
+// AUTHENTICATION
+// ============================================
+
+// Check if user is logged in
+async function checkAuthStatus() {
+    const token = API.getToken();
+    
+    if (token) {
+        try {
+            const response = await API.auth.getUser();
+            currentUser = response.data;
+            updateUIForLoggedInUser();
+        } catch (error) {
+            console.error('Auth check failed:', error);
+            API.removeToken();
+            currentUser = null;
+        }
+    }
+}
+
+// Update UI for logged in user
+function updateUIForLoggedInUser() {
+    const authContainer = document.getElementById('authContainer');
+    if (!authContainer) return;
+
+    if (currentUser) {
+        authContainer.innerHTML = `
+            <span class="user-name">Hello, ${currentUser.firstName}</span>
+            ${currentUser.role === 'admin' ? '<a href="admin.html" class="btn-admin" style="padding: 6px 12px; margin-right: 8px;">Admin</a>' : ''}
+            <button class="btn-logout" onclick="logout()">Logout</button>
+        `;
+    } else {
+        authContainer.innerHTML = `<a href="login.html" class="auth-icon" title="Login">👤</a>`;
+    }
+}
+
+// Logout
+function logout() {
+    API.removeToken();
+    currentUser = null;
+    showNotification('Logged out successfully');
+    setTimeout(() => {
+        window.location.href = 'index.html';
+    }, 1000);
+}
+
+// View my orders
+async function viewMyOrders() {
+    window.location.href = 'my-orders.html';
+}
+
+// ============================================
+// MENU & PRODUCTS
+// ============================================
+
+// Load menu items from API
+async function loadMenuFromAPI() {
+    try {
+        const response = await API.menu.getAll();
+        const menuItems = response.data;
+        
+        // Update menu grid if it exists
+        const menuGrid = document.getElementById('menuGrid');
+        if (menuGrid) {
+            displayMenuItems(menuItems, menuGrid);
+        }
+        
+        // Update home page featured items if on index page
+        if (window.location.pathname.includes('index.html')) {
+            updateFeaturedItems(menuItems);
+        }
+        
+    } catch (error) {
+        console.error('Error loading menu:', error);
+        showNotification('Error loading menu items', 'error');
+    }
+}
+
+// Display menu items in grid
+function displayMenuItems(items, container) {
+    container.innerHTML = items.map(item => `
+        <a href="product.html?id=${item.id}" class="menu-item" data-category="${getCategorySlug(item.category)}" style="text-decoration: none; color: inherit;">
+            <img src="${item.image}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/400x250?text=No+Image'">
+            <div class="menu-item-content">
+                <h3>${item.name}</h3>
+                <p>${item.description.substring(0, 100)}...</p>
+                <div class="price">$${item.price.toFixed(2)}</div>
+                ${!item.isAvailable ? '<div class="unavailable-badge">Unavailable</div>' : ''}
+            </div>
+        </a>
+    `).join('');
+}
+
+// Get category slug for filtering
+function getCategorySlug(category) {
+    return category.toLowerCase().replace(' ', '-');
+}
+
+// Update featured items on home page
+function updateFeaturedItems(items) {
+    const featuredContainer = document.querySelector('.menu-grid');
+    if (!featuredContainer) return;
+    
+    // Get first 6 items
+    const featuredItems = items.slice(0, 6);
+    displayMenuItems(featuredItems, featuredContainer);
+}
+
+// Load single product details
+async function loadProductDetails(productId) {
+    try {
+        const response = await API.menu.getById(productId);
+        const item = response.data;
+        
+        // Update page title
+        document.title = `${item.name} - Bella Cucina`;
+        
+        // Update hero title
+        const heroTitle = document.getElementById('foodDetailTitle');
+        if (heroTitle) {
+            heroTitle.textContent = item.name;
+        }
+        
+        // Update content
+        const contentContainer = document.getElementById('foodDetailContent');
+        if (contentContainer) {
+            contentContainer.innerHTML = `
+                <div class="food-image-container">
+                    <img src="${item.image}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/800x500?text=No+Image'">
+                </div>
+                <div class="food-details">
+                    <div class="food-category">${item.category}</div>
+                    <h2 class="food-title">${item.name}</h2>
+                    <div class="food-price">$${item.price.toFixed(2)}</div>
+                    ${!item.isAvailable ? '<div class="unavailable-notice">Currently Unavailable</div>' : ''}
+                    <p class="food-description">${item.description}</p>
+                    
+                    ${item.ingredients && item.ingredients.length > 0 ? `
+                        <div class="food-ingredients">
+                            <h3>Ingredients</h3>
+                            <ul>
+                                ${item.ingredients.map(ing => `<li>${ing}</li>`).join('')}
+                            </ul>
+                        </div>
+                    ` : ''}
+
+                    ${item.isAvailable ? `
+                        <div class="quantity-selector">
+                            <label>Quantity:</label>
+                            <div class="quantity-controls">
+                                <button class="quantity-btn" onclick="updateQuantity(-1)">-</button>
+                                <span class="quantity-value" id="quantityValue">1</span>
+                                <button class="quantity-btn" onclick="updateQuantity(1)">+</button>
+                            </div>
+                        </div>
+
+                        <button class="btn btn-primary add-to-cart-btn" onclick="addToCartFromProduct('${item.id}')">
+                            Add to Cart - $${item.price.toFixed(2)}
+                        </button>
+                    ` : ''}
+
+                    <a href="menu.html" class="btn btn-ghost" style="width: 100%; margin-top: 15px; text-align: center;">
+                        ← Back to Menu
+                    </a>
+                </div>
+            `;
+        }
+        
+        // Reset quantity
+        window.currentQuantity = 1;
+        
+    } catch (error) {
+        console.error('Error loading product:', error);
+        showNotification('Error loading product details', 'error');
+    }
+}
+
+// Update quantity for product page
+let currentQuantity = 1;
+function updateQuantity(change) {
+    currentQuantity = Math.max(1, currentQuantity + change);
+    const quantityElement = document.getElementById('quantityValue');
+    if (quantityElement) {
+        quantityElement.textContent = currentQuantity;
+    }
+}
+
+// ============================================
+// CART MANAGEMENT - FIXED
+// ============================================
+
+// Update cart count
+async function updateCartCount() {
+    try {
+        // Check if user is logged in
+        if (!API.getToken()) {
+            // Use local storage cart for non-logged in users
+            const localCart = JSON.parse(localStorage.getItem('localCart') || '[]');
+            const count = localCart.reduce((sum, item) => sum + item.quantity, 0);
+            updateCartBadge(count);
+            return;
+        }
+        
+        // Get cart from API
+        const response = await API.cart.get();
+        const count = response.data.summary.itemCount;
+        updateCartBadge(count);
+        
+    } catch (error) {
+        console.error('Error updating cart count:', error);
+        // Fallback to local cart
+        const localCart = JSON.parse(localStorage.getItem('localCart') || '[]');
+        const count = localCart.reduce((sum, item) => sum + item.quantity, 0);
+        updateCartBadge(count);
+    }
+}
+
+// Update cart badge display
+function updateCartBadge(count) {
     const cartBadge = document.getElementById('cartCount');
     if (cartBadge) {
-        cartBadge.textContent = cartCount;
-        cartBadge.style.display = cartCount > 0 ? 'flex' : 'none';
+        cartBadge.textContent = count;
+        cartBadge.style.display = count > 0 ? 'flex' : 'none';
     }
 }
 
-// Save cart to localStorage
-function saveCart() {
-    localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartCount();
-}
-
-// Add to Cart
-function addToCart(foodId) {
-    const food = foodData[foodId];
-    if (!food) return;
-
-    const existingItem = cart.find(item => item.id === foodId);
-    
-    if (existingItem) {
-        existingItem.quantity += currentQuantity;
-    } else {
-        cart.push({
-            id: foodId,
-            name: food.name,
-            price: food.price,
-            image: food.image,
-            quantity: currentQuantity
-        });
-    }
-    
-    saveCart();
-    
-    // Show success message
-    showNotification(`Added ${currentQuantity} x ${food.name} to cart!`);
-    
-    // Reset quantity
+// Add to cart from product page
+async function addToCartFromProduct(productId) {
+    await addToCart(productId, currentQuantity);
     currentQuantity = 1;
     const quantityElement = document.getElementById('quantityValue');
     if (quantityElement) {
@@ -128,8 +288,516 @@ function addToCart(foodId) {
     }
 }
 
+// Add to cart (works for both logged in and guest users)
+async function addToCart(menuItemId, quantity = 1) {
+    try {
+        // Check if user is logged in
+        if (!API.getToken()) {
+            // Add to local storage for guest users
+            addToLocalCart(menuItemId, quantity);
+            showNotification(`Added to cart! Please login to checkout.`);
+            await updateCartCount();
+            return;
+        }
+        
+        // Add to API cart for logged in users
+        await API.cart.add({ menuItemId, quantity });
+        
+        // Get item name for notification
+        const response = await API.menu.getById(menuItemId);
+        showNotification(`Added ${quantity} x ${response.data.name} to cart!`);
+        
+        await updateCartCount();
+        
+    } catch (error) {
+        console.error('Error adding to cart:', error);
+        showNotification('Error adding to cart. Please try again.', 'error');
+    }
+}
+
+// Add to local cart (for guest users)
+function addToLocalCart(menuItemId, quantity) {
+    let localCart = JSON.parse(localStorage.getItem('localCart') || '[]');
+    
+    const existingItem = localCart.find(item => item.menuItemId === menuItemId);
+    
+    if (existingItem) {
+        existingItem.quantity += quantity;
+    } else {
+        localCart.push({ menuItemId, quantity });
+    }
+    
+    localStorage.setItem('localCart', JSON.stringify(localCart));
+}
+
+// Load cart page - FIXED
+async function loadCartPage() {
+    const cartItemsContainer = document.getElementById('cartItems');
+    const cartSummary = document.getElementById('cartSummary');
+    
+    if (!cartItemsContainer || !cartSummary) return;
+    
+    try {
+        // Check if user is logged in
+        if (!API.getToken()) {
+            displayGuestCartMessage(cartItemsContainer, cartSummary);
+            return;
+        }
+        
+        const response = await API.cart.get();
+        const cartData = response.data;
+        
+        if (cartData.items.length === 0) {
+            displayEmptyCart(cartItemsContainer, cartSummary);
+            return;
+        }
+        
+        // Display cart items
+        displayCartItems(cartData.items, cartItemsContainer);
+        
+        // Display summary
+        displayCartSummary(cartData.summary, cartSummary);
+        
+    } catch (error) {
+        console.error('Error loading cart:', error);
+        showNotification('Error loading cart', 'error');
+    }
+}
+
+// Display guest cart message
+function displayGuestCartMessage(itemsContainer, summaryContainer) {
+    itemsContainer.innerHTML = `
+        <div style="text-align: center; padding: 60px 20px;">
+            <div style="font-size: 64px; margin-bottom: 20px;">🔒</div>
+            <h3 style="font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 15px;">Please Login</h3>
+            <p style="color: var(--text-gray); margin-bottom: 30px;">You need to login to view your cart and place orders.</p>
+            <a href="login.html" class="btn btn-primary">Login / Sign Up</a>
+        </div>
+    `;
+    summaryContainer.innerHTML = '';
+}
+
+// Display empty cart
+function displayEmptyCart(itemsContainer, summaryContainer) {
+    itemsContainer.innerHTML = `
+        <div style="text-align: center; padding: 60px 20px;">
+            <div style="font-size: 64px; margin-bottom: 20px;">🛒</div>
+            <h3 style="font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 15px;">Your cart is empty</h3>
+            <p style="color: var(--text-gray); margin-bottom: 30px;">Add some delicious items to get started!</p>
+            <a href="menu.html" class="btn btn-primary">Browse Menu</a>
+        </div>
+    `;
+    summaryContainer.innerHTML = '';
+}
+
+// Display cart items - FIXED with proper event handlers
+function displayCartItems(items, container) {
+    container.innerHTML = items.map(item => `
+        <div class="cart-item">
+            <img src="${item.image}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/100?text=No+Image'">
+            <div class="cart-item-details">
+                <h3>${item.name}</h3>
+                <p class="cart-item-price">$${item.price.toFixed(2)}</p>
+            </div>
+            <div class="cart-item-actions">
+                <div class="quantity-controls">
+                    <button class="quantity-btn" onclick="updateCartItemQuantity(${item.id}, ${item.quantity - 1})">-</button>
+                    <span class="quantity-value">${item.quantity}</span>
+                    <button class="quantity-btn" onclick="updateCartItemQuantity(${item.id}, ${item.quantity + 1})">+</button>
+                </div>
+                <button class="btn-remove" onclick="removeFromCart(${item.id})">Remove</button>
+            </div>
+            <div class="cart-item-total">$${(item.price * item.quantity).toFixed(2)}</div>
+        </div>
+    `).join('');
+}
+
+// Display cart summary
+function displayCartSummary(summary, container) {
+    const deliveryNotice = summary.subtotal < 30 
+        ? `<p class="delivery-notice">Add $${(30 - summary.subtotal).toFixed(2)} more for free delivery!</p>` 
+        : '';
+    
+    container.innerHTML = `
+        <h3>Order Summary</h3>
+        <div class="summary-row">
+            <span>Subtotal</span>
+            <span>$${summary.subtotal.toFixed(2)}</span>
+        </div>
+        <div class="summary-row">
+            <span>Delivery Fee</span>
+            <span>${summary.deliveryFee === 0 ? 'FREE' : '$' + summary.deliveryFee.toFixed(2)}</span>
+        </div>
+        <div class="summary-row">
+            <span>Tax (8.75%)</span>
+            <span>$${summary.tax.toFixed(2)}</span>
+        </div>
+        <div class="summary-row total">
+            <span>Total</span>
+            <span>$${summary.total.toFixed(2)}</span>
+        </div>
+        ${deliveryNotice}
+        <a href="checkout.html" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Proceed to Checkout</a>
+        <a href="menu.html" class="btn btn-ghost" style="width: 100%; margin-top: 10px;">Continue Shopping</a>
+    `;
+}
+
+// Update cart item quantity - FIXED
+async function updateCartItemQuantity(cartItemId, newQuantity) {
+    if (newQuantity < 1) {
+        await removeFromCart(cartItemId);
+        return;
+    }
+
+    try {
+        if (API.getToken()) {
+            // Logged-in user
+            await API.cart.update(cartItemId, { quantity: newQuantity });
+        } else {
+            // Guest user
+            let localCart = JSON.parse(localStorage.getItem('localCart') || '[]');
+            const item = localCart.find(i => i.menuItemId === cartItemId);
+            if (!item) return;
+            item.quantity = newQuantity;
+            localStorage.setItem('localCart', JSON.stringify(localCart));
+        }
+
+        await loadCartPage();
+        await updateCartCount();
+    } catch (error) {
+        console.error('Error updating cart:', error);
+        showNotification('Error updating cart', 'error');
+    }
+}
+
+// Remove from cart - FIXED
+async function removeFromCart(cartItemId) {
+    try {
+        if (API.getToken()) {
+            await API.cart.remove(cartItemId);
+        } else {
+            let localCart = JSON.parse(localStorage.getItem('localCart') || '[]');
+            localCart = localCart.filter(i => i.menuItemId !== cartItemId);
+            localStorage.setItem('localCart', JSON.stringify(localCart));
+        }
+
+        showNotification('Item removed from cart');
+        await loadCartPage();
+        await updateCartCount();
+    } catch (error) {
+        console.error('Error removing from cart:', error);
+        showNotification('Error removing item', 'error');
+    }
+}
+
+// ============================================
+// CHECKOUT & ORDERS
+// ============================================
+
+// Load checkout page
+function loadCheckoutPage() {
+    const savedAddress = JSON.parse(localStorage.getItem('deliveryAddress') || '{}');
+    
+    if (savedAddress.fullName) {
+        document.getElementById('fullName').value = savedAddress.fullName || '';
+        document.getElementById('email').value = savedAddress.email || '';
+        document.getElementById('phone').value = savedAddress.phone || '';
+        document.getElementById('address').value = savedAddress.address || '';
+        document.getElementById('city').value = savedAddress.city || '';
+        document.getElementById('state').value = savedAddress.state || '';
+        document.getElementById('zipCode').value = savedAddress.zipCode || '';
+        document.getElementById('deliveryNotes').value = savedAddress.deliveryNotes || '';
+    }
+    
+    updateCheckoutSummary();
+}
+
+// Update checkout summary
+async function updateCheckoutSummary() {
+    const summaryContainer = document.getElementById('checkoutSummary');
+    if (!summaryContainer) return;
+    
+    try {
+        const response = await API.cart.get();
+        const cartData = response.data;
+        
+        summaryContainer.innerHTML = `
+            <h3>Order Summary</h3>
+            <div class="checkout-items">
+                ${cartData.items.map(item => `
+                    <div class="checkout-item">
+                        <img src="${item.image}" alt="${item.name}" onerror="this.src='https://via.placeholder.com/60?text=No+Image'">
+                        <div class="checkout-item-info">
+                            <h4>${item.name}</h4>
+                            <p>Quantity: ${item.quantity}</p>
+                        </div>
+                        <div class="checkout-item-price">$${(item.price * item.quantity).toFixed(2)}</div>
+                    </div>
+                `).join('')}
+            </div>
+            <div class="summary-row">
+                <span>Subtotal</span>
+                <span>$${cartData.summary.subtotal.toFixed(2)}</span>
+            </div>
+            <div class="summary-row">
+                <span>Delivery Fee</span>
+                <span>${cartData.summary.deliveryFee === 0 ? 'FREE' : '$' + cartData.summary.deliveryFee.toFixed(2)}</span>
+            </div>
+            <div class="summary-row">
+                <span>Tax (8.75%)</span>
+                <span>$${cartData.summary.tax.toFixed(2)}</span>
+            </div>
+            <div class="summary-row total">
+                <span>Total</span>
+                <span>$${cartData.summary.total.toFixed(2)}</span>
+            </div>
+        `;
+    } catch (error) {
+        console.error('Error loading checkout summary:', error);
+    }
+}
+
+// Proceed to payment
+function proceedToPayment(event) {
+    event.preventDefault();
+    
+    const formData = new FormData(event.target);
+    const address = {
+        fullName: formData.get('fullName'),
+        email: formData.get('email'),
+        phone: formData.get('phone'),
+        address: formData.get('address'),
+        city: formData.get('city'),
+        state: formData.get('state'),
+        zipCode: formData.get('zipCode'),
+        deliveryNotes: formData.get('deliveryNotes')
+    };
+    
+    localStorage.setItem('deliveryAddress', JSON.stringify(address));
+    window.location.href = 'payment.html';
+}
+
+// Load payment page
+function loadPaymentPage() {
+    const address = JSON.parse(localStorage.getItem('deliveryAddress') || '{}');
+    const addressDisplay = document.getElementById('deliveryAddressDisplay');
+    
+    if (addressDisplay && address.fullName) {
+        addressDisplay.innerHTML = `
+            <h4>Delivery Address</h4>
+            <p>${address.fullName}</p>
+            <p>${address.address}</p>
+            <p>${address.city}, ${address.state} ${address.zipCode}</p>
+            <p>Phone: ${address.phone}</p>
+            <p>Email: ${address.email}</p>
+            ${address.deliveryNotes ? `<p><em>Notes: ${address.deliveryNotes}</em></p>` : ''}
+            <a href="checkout.html" style="color: var(--primary-gold); text-decoration: none; font-size: 14px;">Edit Address</a>
+        `;
+    }
+    
+    updateCheckoutSummary();
+}
+
+// Process payment and create order
+async function processPayment(event) {
+    event.preventDefault();
+    
+    const submitBtn = event.target.querySelector('button[type="submit"]');
+    const originalText = submitBtn.textContent;
+    submitBtn.textContent = 'Processing...';
+    submitBtn.disabled = true;
+    
+    try {
+        // Get delivery address
+        const address = JSON.parse(localStorage.getItem('deliveryAddress'));
+        
+        if (!address || !address.fullName) {
+            throw new Error('Delivery address not found');
+        }
+        
+        // Get payment method
+        const paymentMethod = document.querySelector('input[name="paymentMethod"]:checked').value;
+        
+        // Get cart items
+        const cartResponse = await API.cart.get();
+        const items = cartResponse.data.items.map(item => ({
+            menuItemId: item.menuItemId,
+            quantity: item.quantity
+        }));
+        
+        // Create order
+        const orderData = {
+            ...address,
+            paymentMethod,
+            items
+        };
+        
+        const response = await API.orders.create(orderData);
+        
+        // Store order number
+        localStorage.setItem('lastOrderNumber', response.data.orderNumber);
+        
+        // Clear stored address
+        localStorage.removeItem('deliveryAddress');
+        
+        // Redirect to success page
+        window.location.href = 'order-success.html';
+        
+    } catch (error) {
+        console.error('Error processing payment:', error);
+        showNotification('Error processing order. Please try again.', 'error');
+        submitBtn.textContent = originalText;
+        submitBtn.disabled = false;
+    }
+}
+
+// ============================================
+// CONTACT FORM - FIXED
+// ============================================
+
+// Handle contact form submission - FIXED
+async function handleSubmit(event) {
+    event.preventDefault();
+    
+    const formData = new FormData(event.target);
+    const data = {
+        firstName: formData.get('firstName'),
+        lastName: formData.get('lastName'),
+        email: formData.get('email'),
+        phone: formData.get('phone') || '',
+        inquiryType: formData.get('inquiryType'),
+        message: formData.get('message')
+    };
+    
+    try {
+        await API.contact.submit(data);
+        showNotification('Thank you for your message! We will get back to you soon.');
+        event.target.reset();
+    } catch (error) {
+        console.error('Error submitting contact form:', error);
+        showNotification('Error sending message. Please try again.', 'error');
+    }
+}
+
+// ============================================
+// AUTH FORMS
+// ============================================
+
+// Handle auth form submission
+async function handleAuthSubmit(event) {
+    event.preventDefault();
+    
+    const formData = new FormData(event.target);
+    const isLogin = event.target.closest('#loginForm') !== null;
+    
+    try {
+        if (isLogin) {
+            // Login
+            const data = {
+                email: formData.get('email'),
+                password: formData.get('password')
+            };
+            
+            const response = await API.auth.login(data);
+            API.setToken(response.token);
+            currentUser = response.data;
+            
+            showNotification('Login successful! Welcome back.');
+            
+            // Migrate local cart to server if exists
+            await migrateLocalCart();
+            
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1500);
+            
+        } else {
+            // Register
+            const data = {
+                firstName: formData.get('firstName'),
+                lastName: formData.get('lastName'),
+                email: formData.get('email'),
+                phone: formData.get('phone'),
+                password: formData.get('password')
+            };
+            
+            const response = await API.auth.register(data);
+            API.setToken(response.token);
+            currentUser = response.data;
+            
+            showNotification('Registration successful! Welcome to Bella Cucina.');
+            
+            setTimeout(() => {
+                window.location.href = 'index.html';
+            }, 1500);
+        }
+    } catch (error) {
+        console.error('Auth error:', error);
+        showNotification(error.message || 'Authentication failed. Please try again.', 'error');
+    }
+}
+
+// Migrate local cart to server after login
+async function migrateLocalCart() {
+    const localCart = JSON.parse(localStorage.getItem('localCart') || '[]');
+    
+    if (localCart.length > 0) {
+        try {
+            for (const item of localCart) {
+                await API.cart.add(item);
+            }
+            localStorage.removeItem('localCart');
+            await updateCartCount();
+        } catch (error) {
+            console.error('Error migrating cart:', error);
+        }
+    }
+}
+
+// Toggle auth form
+function toggleAuthForm() {
+    const loginForm = document.getElementById('loginForm');
+    const signupForm = document.getElementById('signupForm');
+    
+    if (loginForm && signupForm) {
+        if (loginForm.style.display === 'none') {
+            loginForm.style.display = 'block';
+            signupForm.style.display = 'none';
+        } else {
+            loginForm.style.display = 'none';
+            signupForm.style.display = 'block';
+        }
+    }
+}
+
+// ============================================
+// MENU FILTERING
+// ============================================
+
+// Filter menu by category
+function filterMenu(category) {
+    const items = document.querySelectorAll('.menu-item');
+    const buttons = document.querySelectorAll('.category-btn');
+    
+    buttons.forEach(btn => btn.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    items.forEach(item => {
+        const itemCategory = item.dataset.category;
+        if (category === 'all' || itemCategory === category) {
+            item.style.display = 'block';
+        } else {
+            item.style.display = 'none';
+        }
+    });
+}
+
+// ============================================
+// UI UTILITIES
+// ============================================
+
 // Show notification
-function showNotification(message) {
+function showNotification(message, type = 'success') {
     // Remove existing notification if any
     const existingNotification = document.querySelector('.notification');
     if (existingNotification) {
@@ -137,7 +805,7 @@ function showNotification(message) {
     }
 
     const notification = document.createElement('div');
-    notification.className = 'notification';
+    notification.className = `notification ${type}`;
     notification.textContent = message;
     document.body.appendChild(notification);
     
@@ -151,105 +819,19 @@ function showNotification(message) {
     }, 3000);
 }
 
-// Remove from cart
-function removeFromCart(foodId) {
-    cart = cart.filter(item => item.id !== foodId);
-    saveCart();
-    loadCartPage();
+// Navbar scroll effect
+function initNavbarScroll() {
+    window.addEventListener('scroll', function() {
+        const nav = document.getElementById('nav');
+        if (nav && window.scrollY > 100) {
+            nav.classList.add('scrolled');
+        } else if (nav) {
+            nav.classList.remove('scrolled');
+        }
+    });
 }
 
-// Update cart item quantity
-function updateCartQuantity(foodId, change) {
-    const item = cart.find(item => item.id === foodId);
-    if (item) {
-        item.quantity = Math.max(1, item.quantity + change);
-        saveCart();
-        loadCartPage();
-    }
-}
-
-// Load cart page
-function loadCartPage() {
-    const cartItemsContainer = document.getElementById('cartItems');
-    const cartSummary = document.getElementById('cartSummary');
-    
-    if (!cartItemsContainer || !cartSummary) return;
-    
-    if (cart.length === 0) {
-        cartItemsContainer.innerHTML = `
-            <div style="text-align: center; padding: 60px 20px;">
-                <div style="font-size: 64px; margin-bottom: 20px;">🛒</div>
-                <h3 style="font-family: 'Playfair Display', serif; font-size: 28px; margin-bottom: 15px;">Your cart is empty</h3>
-                <p style="color: var(--text-gray); margin-bottom: 30px;">Add some delicious items to get started!</p>
-                <a href="menu.html" class="btn btn-primary">Browse Menu</a>
-            </div>
-        `;
-        cartSummary.innerHTML = '';
-        return;
-    }
-    
-    // Display cart items
-    cartItemsContainer.innerHTML = cart.map(item => `
-        <div class="cart-item">
-            <img src="${item.image}" alt="${item.name}">
-            <div class="cart-item-details">
-                <h3>${item.name}</h3>
-                <p class="cart-item-price">$${item.price.toFixed(2)}</p>
-            </div>
-            <div class="cart-item-actions">
-                <div class="quantity-controls">
-                    <button class="quantity-btn" onclick="updateCartQuantity('${item.id}', -1)">-</button>
-                    <span class="quantity-value">${item.quantity}</span>
-                    <button class="quantity-btn" onclick="updateCartQuantity('${item.id}', 1)">+</button>
-                </div>
-                <button class="btn-remove" onclick="removeFromCart('${item.id}')">Remove</button>
-            </div>
-            <div class="cart-item-total">$${(item.price * item.quantity).toFixed(2)}</div>
-        </div>
-    `).join('');
-    
-    // Calculate totals
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const deliveryFee = subtotal >= 30 ? 0 : 5;
-    const tax = subtotal * 0.0875; // 8.75% tax
-    const total = subtotal + deliveryFee + tax;
-    
-    // Display summary
-    cartSummary.innerHTML = `
-        <h3>Order Summary</h3>
-        <div class="summary-row">
-            <span>Subtotal</span>
-            <span>$${subtotal.toFixed(2)}</span>
-        </div>
-        <div class="summary-row">
-            <span>Delivery Fee</span>
-            <span>${deliveryFee === 0 ? 'FREE' : '$' + deliveryFee.toFixed(2)}</span>
-        </div>
-        <div class="summary-row">
-            <span>Tax (8.75%)</span>
-            <span>$${tax.toFixed(2)}</span>
-        </div>
-        <div class="summary-row total">
-            <span>Total</span>
-            <span>$${total.toFixed(2)}</span>
-        </div>
-        ${subtotal < 30 ? '<p class="delivery-notice">Add $' + (30 - subtotal).toFixed(2) + ' more for free delivery!</p>' : ''}
-        <a href="checkout.html" class="btn btn-primary" style="width: 100%; margin-top: 20px;">Proceed to Checkout</a>
-        <a href="menu.html" class="btn btn-ghost" style="width: 100%; margin-top: 10px;">Continue Shopping</a>
-    `;
-}
-
-// Navbar Scroll Effect
-window.addEventListener('scroll', function() {
-    const nav = document.getElementById('nav');
-    if (nav && window.scrollY > 100) {
-        nav.classList.add('scrolled');
-    } else if (nav) {
-        nav.classList.remove('scrolled');
-    }
-});
-
-// Stats Counter Animation
+// Stats counter animation
 function animateCounter(element) {
     const target = parseInt(element.dataset.target);
     const duration = 2000;
@@ -278,269 +860,97 @@ const observer = new IntersectionObserver((entries) => {
     });
 }, { threshold: 0.5 });
 
-// Menu Filter Function
-function filterMenu(category) {
-    const items = document.querySelectorAll('.menu-item');
-    const buttons = document.querySelectorAll('.category-btn');
-    
-    buttons.forEach(btn => btn.classList.remove('active'));
-    event.target.classList.add('active');
-    
-    items.forEach(item => {
-        if (category === 'all' || item.dataset.category === category) {
-            item.style.display = 'block';
-        } else {
-            item.style.display = 'none';
-        }
-    });
-}
+// ============================================
+// ADD CUSTOM STYLES FOR NEW ELEMENTS
+// ============================================
 
-// Contact Form Submit
-function handleSubmit(event) {
-    event.preventDefault();
-    showNotification('Thank you for your message! We will get back to you soon.');
-    event.target.reset();
-}
-
-// Auth Form Submit
-function handleAuthSubmit(event) {
-    event.preventDefault();
-    showNotification('Login successful! Welcome to Bella Cucina.');
-    event.target.reset();
-    setTimeout(() => {
-        window.location.href = 'index.html';
-    }, 1500);
-}
-
-// Toggle Auth Form
-function toggleAuthForm() {
-    const loginForm = document.getElementById('loginForm');
-    const signupForm = document.getElementById('signupForm');
-    
-    if (loginForm && signupForm) {
-        if (loginForm.style.display === 'none') {
-            loginForm.style.display = 'block';
-            signupForm.style.display = 'none';
-        } else {
-            loginForm.style.display = 'none';
-            signupForm.style.display = 'block';
-        }
-    }
-}
-
-// Update Quantity (for individual product pages)
-function updateQuantity(change) {
-    currentQuantity = Math.max(1, currentQuantity + change);
-    const quantityElement = document.getElementById('quantityValue');
-    if (quantityElement) {
-        quantityElement.textContent = currentQuantity;
-    }
-}
-
-// Get URL parameter
-function getUrlParameter(name) {
-    name = name.replace(/[\[]/, '\\[').replace(/[\]]/, '\\]');
-    const regex = new RegExp('[\\?&]' + name + '=([^&#]*)');
-    const results = regex.exec(location.search);
-    return results === null ? '' : decodeURIComponent(results[1].replace(/\+/g, ' '));
-}
-
-// Load product details if on product page
-document.addEventListener('DOMContentLoaded', function() {
-    const foodId = getUrlParameter('id');
-    if (foodId && foodData[foodId]) {
-        loadProductDetails(foodId);
+// Add styles for user dropdown menu
+const style = document.createElement('style');
+style.textContent = `
+    .user-dropdown-menu {
+        position: fixed;
+        top: 70px;
+        right: 40px;
+        background: white;
+        border-radius: 8px;
+        box-shadow: 0 5px 30px rgba(0,0,0,0.2);
+        padding: 20px;
+        min-width: 220px;
+        z-index: 10000;
+        animation: fadeIn 0.2s ease;
     }
     
-    // Load cart page if on cart page
-    if (window.location.pathname.includes('cart.html')) {
-        loadCartPage();
-    }
-});
-
-// Load product details function
-function loadProductDetails(foodId) {
-    const food = foodData[foodId];
-    if (!food) return;
-
-    document.title = `${food.name} - Bella Cucina`;
-
-    const heroTitle = document.getElementById('foodDetailTitle');
-    if (heroTitle) {
-        heroTitle.textContent = food.name;
-    }
-
-    const contentContainer = document.getElementById('foodDetailContent');
-    if (contentContainer) {
-        contentContainer.innerHTML = `
-            <div class="food-image-container">
-                <img src="${food.image}" alt="${food.name}">
-            </div>
-            <div class="food-details">
-                <div class="food-category">${food.category}</div>
-                <h2 class="food-title">${food.name}</h2>
-                <div class="food-price">$${food.price}</div>
-                <p class="food-description">${food.description}</p>
-                
-                <div class="food-ingredients">
-                    <h3>Ingredients</h3>
-                    <ul>
-                        ${food.ingredients.map(ing => `<li>${ing}</li>`).join('')}
-                    </ul>
-                </div>
-
-                <div class="quantity-selector">
-                    <label>Quantity:</label>
-                    <div class="quantity-controls">
-                        <button class="quantity-btn" onclick="updateQuantity(-1)">-</button>
-                        <span class="quantity-value" id="quantityValue">1</span>
-                        <button class="quantity-btn" onclick="updateQuantity(1)">+</button>
-                    </div>
-                </div>
-
-                <button class="btn btn-primary add-to-cart-btn" onclick="addToCart('${foodId}')">
-                    Add to Cart - $${food.price}
-                </button>
-
-                <a href="menu.html" class="btn btn-ghost" style="width: 100%; margin-top: 15px; text-align: center;">
-                    ← Back to Menu
-                </a>
-            </div>
-        `;
-    }
-
-    currentQuantity = 1;
-}
-
-// Checkout form handling
-function proceedToPayment(event) {
-    event.preventDefault();
-    
-    const formData = new FormData(event.target);
-    const address = {
-        fullName: formData.get('fullName'),
-        email: formData.get('email'),
-        phone: formData.get('phone'),
-        address: formData.get('address'),
-        city: formData.get('city'),
-        state: formData.get('state'),
-        zipCode: formData.get('zipCode'),
-        deliveryNotes: formData.get('deliveryNotes')
-    };
-    
-    localStorage.setItem('deliveryAddress', JSON.stringify(address));
-    window.location.href = 'payment.html';
-}
-
-// Load checkout page
-function loadCheckoutPage() {
-    const savedAddress = JSON.parse(localStorage.getItem('deliveryAddress'));
-    
-    if (savedAddress) {
-        document.getElementById('fullName').value = savedAddress.fullName || '';
-        document.getElementById('email').value = savedAddress.email || '';
-        document.getElementById('phone').value = savedAddress.phone || '';
-        document.getElementById('address').value = savedAddress.address || '';
-        document.getElementById('city').value = savedAddress.city || '';
-        document.getElementById('state').value = savedAddress.state || '';
-        document.getElementById('zipCode').value = savedAddress.zipCode || '';
-        document.getElementById('deliveryNotes').value = savedAddress.deliveryNotes || '';
+    @keyframes fadeIn {
+        from { opacity: 0; transform: translateY(-10px); }
+        to { opacity: 1; transform: translateY(0); }
     }
     
-    updateCheckoutSummary();
-}
-
-// Update checkout summary
-function updateCheckoutSummary() {
-    const summaryContainer = document.getElementById('checkoutSummary');
-    if (!summaryContainer) return;
-    
-    const subtotal = cart.reduce((sum, item) => sum + (item.price * item.quantity), 0);
-    const deliveryFee = subtotal >= 30 ? 0 : 5;
-    const tax = subtotal * 0.0875;
-    const total = subtotal + deliveryFee + tax;
-    
-    summaryContainer.innerHTML = `
-        <h3>Order Summary</h3>
-        <div class="checkout-items">
-            ${cart.map(item => `
-                <div class="checkout-item">
-                    <img src="${item.image}" alt="${item.name}">
-                    <div class="checkout-item-info">
-                        <h4>${item.name}</h4>
-                        <p>Quantity: ${item.quantity}</p>
-                    </div>
-                    <div class="checkout-item-price">$${(item.price * item.quantity).toFixed(2)}</div>
-                </div>
-            `).join('')}
-        </div>
-        <div class="summary-row">
-            <span>Subtotal</span>
-            <span>$${subtotal.toFixed(2)}</span>
-        </div>
-        <div class="summary-row">
-            <span>Delivery Fee</span>
-            <span>${deliveryFee === 0 ? 'FREE' : '$' + deliveryFee.toFixed(2)}</span>
-        </div>
-        <div class="summary-row">
-            <span>Tax (8.75%)</span>
-            <span>$${tax.toFixed(2)}</span>
-        </div>
-        <div class="summary-row total">
-            <span>Total</span>
-            <span>$${total.toFixed(2)}</span>
-        </div>
-    `;
-}
-
-// Load payment page
-function loadPaymentPage() {
-    const address = JSON.parse(localStorage.getItem('deliveryAddress'));
-    const addressDisplay = document.getElementById('deliveryAddressDisplay');
-    
-    if (addressDisplay && address) {
-        addressDisplay.innerHTML = `
-            <h4>Delivery Address</h4>
-            <p>${address.fullName}</p>
-            <p>${address.address}</p>
-            <p>${address.city}, ${address.state} ${address.zipCode}</p>
-            <p>Phone: ${address.phone}</p>
-            <p>Email: ${address.email}</p>
-            ${address.deliveryNotes ? `<p><em>Notes: ${address.deliveryNotes}</em></p>` : ''}
-            <a href="checkout.html" style="color: var(--primary-gold); text-decoration: none; font-size: 14px;">Edit Address</a>
-        `;
+    .user-dropdown-menu .user-info {
+        padding-bottom: 15px;
+        border-bottom: 1px solid #E8E8E8;
+        margin-bottom: 15px;
     }
     
-    updateCheckoutSummary();
-}
-
-// Process payment
-function processPayment(event) {
-    event.preventDefault();
-    
-    // Show loading state
-    const submitBtn = event.target.querySelector('button[type="submit"]');
-    const originalText = submitBtn.textContent;
-    submitBtn.textContent = 'Processing...';
-    submitBtn.disabled = true;
-    
-    // Simulate payment processing
-    setTimeout(() => {
-        // Clear cart
-        cart = [];
-        localStorage.removeItem('cart');
-        localStorage.removeItem('deliveryAddress');
-        
-        // Redirect to success page
-        window.location.href = 'order-success.html';
-    }, 2000);
-}
-
-// Initialize pages based on current page
-document.addEventListener('DOMContentLoaded', function() {
-    if (window.location.pathname.includes('checkout.html')) {
-        loadCheckoutPage();
-    } else if (window.location.pathname.includes('payment.html')) {
-        loadPaymentPage();
+    .user-dropdown-menu .user-info strong {
+        display: block;
+        font-size: 16px;
+        margin-bottom: 5px;
+        color: var(--dark-gray);
     }
-});
+    
+    .user-dropdown-menu .user-info span {
+        font-size: 14px;
+        color: var(--text-gray);
+    }
+    
+    .user-dropdown-menu a {
+        display: block;
+        padding: 10px;
+        color: var(--dark-gray);
+        text-decoration: none;
+        border-radius: 4px;
+        transition: background 0.2s;
+    }
+    
+    .user-dropdown-menu a:hover {
+        background: var(--light-gray);
+        color: var(--primary-gold);
+    }
+    
+    .notification.error {
+        background: #e74c3c;
+    }
+    
+    .unavailable-badge {
+        background: #e74c3c;
+        color: white;
+        padding: 5px 10px;
+        border-radius: 4px;
+        font-size: 12px;
+        display: inline-block;
+        margin-top: 10px;
+    }
+    
+    .unavailable-notice {
+        background: #fff3cd;
+        color: #856404;
+        padding: 12px;
+        border-radius: 6px;
+        margin-bottom: 20px;
+        text-align: center;
+    }
+    
+    .btn-admin {
+        background: var(--primary-gold);
+        color: white;
+        border: none;
+        border-radius: 6px;
+        text-decoration: none;
+        display: inline-block;
+    }
+    
+    .btn-admin:hover {
+        background: #c2921d;
+    }
+`;
+document.head.appendChild(style);
