@@ -1,4 +1,3 @@
-
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
@@ -12,38 +11,35 @@ const authRoutes = require('./routes/auth');
 const menuRoutes = require('./routes/menu');
 const cartRoutes = require('./routes/cart');
 const orderRoutes = require('./routes/orders');
-const userRoutes = require('./routes/users');
 const contactRoutes = require('./routes/contact');
+const userRoutes = require('./routes/users');
+const uploadRoutes = require('./routes/upload');
 
-// Import database initialization
-const db = require('./config/database');
+// Import middleware
+const errorHandler = require('./middleware/errorHandler');
 
-// Create Express app
+// Initialize express app
 const app = express();
 
 // Middleware
+// ⚠️ Use exact origin when credentials are true
+app.use(cors({
+    origin: 'http://127.0.0.1:5500', // frontend origin
+    credentials: true
+}));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// CORS configuration
-const allowedOrigins = process.env.ALLOWED_ORIGINS?.split(',') || ['http://localhost:3000'];
-app.use(cors({
-  origin: function(origin, callback) {
-    // Allow requests with no origin (mobile apps, Postman, etc.)
-    if (!origin) return callback(null, true);
-    
-    if (allowedOrigins.indexOf(origin) === -1) {
-      return callback(new Error('CORS policy violation'), false);
-    }
-    return callback(null, true);
-  },
-  credentials: true
-}));
+// Serve static files (uploads)
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
-// Request logging middleware
-app.use((req, res, next) => {
-  console.log(`${new Date().toISOString()} - ${req.method} ${req.path}`);
-  next();
+// Serve front-end
+app.use(express.static(path.join(__dirname, 'bella-cucina-frontend')));
+
+// Optional SPA fallback (if using a single-page app)
+app.get('*', (req, res, next) => {
+    if (req.path.startsWith('/api/')) return next(); // skip API routes
+    res.sendFile(path.join(__dirname, 'bella-cucina-frontend', 'index.html'));
 });
 
 // API Routes
@@ -51,72 +47,29 @@ app.use('/api/auth', authRoutes);
 app.use('/api/menu', menuRoutes);
 app.use('/api/cart', cartRoutes);
 app.use('/api/orders', orderRoutes);
-app.use('/api/users', userRoutes);
 app.use('/api/contact', contactRoutes);
+app.use('/api/users', userRoutes);
+app.use('/api/upload', uploadRoutes);
 
-// Health check endpoint
+// Health check route
 app.get('/api/health', (req, res) => {
-  res.json({ 
-    status: 'OK', 
-    timestamp: new Date().toISOString(),
-    message: 'Bella Cucina API is running'
-  });
+    res.json({ 
+        status: 'OK', 
+        message: 'Bella Cucina API is running',
+        timestamp: new Date().toISOString()
+    });
 });
 
-// Root endpoint
-app.get('/', (req, res) => {
-  res.json({
-    message: 'Welcome to Bella Cucina API',
-    version: '1.0.0',
-    endpoints: {
-      auth: '/api/auth',
-      menu: '/api/menu',
-      cart: '/api/cart',
-      orders: '/api/orders',
-      users: '/api/users',
-      contact: '/api/contact'
-    }
-  });
-});
-
-// 404 handler
-app.use((req, res) => {
-  res.status(404).json({ 
-    success: false, 
-    message: 'Route not found' 
-  });
-});
-
-// Error handling middleware
-app.use((err, req, res, next) => {
-  console.error('Error:', err.stack);
-  
-  res.status(err.status || 500).json({
-    success: false,
-    message: err.message || 'Internal server error',
-    ...(process.env.NODE_ENV === 'development' && { stack: err.stack })
-  });
-});
+// Error handling middleware (must be last)
+app.use(errorHandler);
 
 // Start server
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log(`
-╔════════════════════════════════════════╗
-║   Bella Cucina Backend Server Running   ║
-╠════════════════════════════════════════╣
-║   Port: ${PORT}                           ║
-║   Environment: ${process.env.NODE_ENV || 'development'}            ║
-║   Database: Connected                   ║
-╚════════════════════════════════════════╝
-  `);
+    console.log(`🚀 Server is running on port ${PORT}`);
+    console.log(`📍 Environment: ${process.env.NODE_ENV || 'development'}`);
+    console.log(`🔗 bella-cucina restaurant available at http://localhost:${PORT}`);
+    console.log(`🔗 API available at http://localhost:${PORT}/api`);
 });
 
-// Graceful shutdown
-process.on('SIGTERM', () => {
-  console.log('SIGTERM signal received: closing HTTP server');
-  server.close(() => {
-    console.log('HTTP server closed');
-    db.close();
-  });
-});
+module.exports = app;
