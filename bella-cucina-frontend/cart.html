@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shopping Cart - Bella Cucina</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- Navbar -->
+    <nav id="nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Bella Cucina</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="nav-auth" id="authContainer">
+                <a href="cart.html" class="auth-icon cart-icon-container" title="Cart">
+                    🛒
+                    <span class="cart-badge" id="cartCount">0</span>
+                </a>
+                <a href="login.html" class="auth-icon" title="Login">👤</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero" style="height: 40vh; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=1600') center/cover;">
+        <div class="hero-content">
+            <h1>Shopping Cart</h1>
+            <div class="decorative-line"></div>
+        </div>
+    </section>
+
+    <!-- Cart Section -->
+    <section style="background: var(--light-gray); padding: 80px 40px;">
+        <div class="cart-container">
+            <!-- Cart Items -->
+            <div class="cart-items" id="cartItems">
+                <!-- Items added dynamically via script.js -->
+            </div>
+
+            <!-- Cart Summary -->
+            <div class="cart-summary" id="cartSummary">
+                <!-- Summary added dynamically via script.js -->
+            </div>
+        </div>
+    </section>
+
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>Bella Cucina has been serving authentic Italian cuisine for over 25 years. Our passion for food and dedication to quality make every dining experience unforgettable.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="menu.html">Menu</a>
+                <a href="about.html">About</a>
+                <a href="services.html">Services</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>123 Main Street<br>San Francisco, CA 94102</p>
+                <p>Phone: +1 (555) 012-3456</p>
+                <p>Email: info@bellacucina.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Bella Cucina. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <!-- Scripts -->
+    <script src="api-config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

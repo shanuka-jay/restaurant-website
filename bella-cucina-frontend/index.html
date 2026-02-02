@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bella Cucina - Authentic Italian Dining</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav id="nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Bella Cucina</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="nav-auth">
+    <a href="cart.html" class="auth-icon cart-icon-container" title="Cart">
+        🛒
+        <span class="cart-badge" id="cartCount">0</span>
+    </a>
+    <div id="authContainer">
+        <a href="login.html" class="auth-icon" title="Login">👤</a>
+    </div>
+</div>
+        </div>
+    </nav>
+
+    <section class="hero">
+        <div class="hero-content">
+            <h1>Bella Cucina</h1>
+            <div class="decorative-line"></div>
+            <p class="tagline">AUTHENTIC ITALIAN DINING EXPERIENCE</p>
+            <div class="hero-buttons">
+                <a href="menu.html" class="btn btn-ghost">View Menu</a>
+            </div>
+        </div>
+    </section>
+
+    <section class="stats-section">
+        <div class="stats-grid">
+            <div class="stat-item">
+                <div class="stat-number" data-target="50000">0</div>
+                <div class="stat-label">Happy Customers</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" data-target="25">0</div>
+                <div class="stat-label">Years Experience</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" data-target="150">0</div>
+                <div class="stat-label">Menu Items</div>
+            </div>
+            <div class="stat-item">
+                <div class="stat-number" data-target="12">0</div>
+                <div class="stat-label">Awards Won</div>
+            </div>
+        </div>
+    </section>
+
+    <section style="background: var(--light-gray);">
+        <div class="container">
+            <h2 class="section-title">Welcome to Bella Cucina</h2>
+            <p class="about-intro">
+                For over 25 years, we've been serving the finest Italian cuisine in the heart of San Francisco. 
+                Our commitment to authentic flavors, fresh ingredients, and warm hospitality has made us a beloved 
+                destination for those seeking a true taste of Italy.
+            </p>
+            <div class="about-content">
+                <div class="about-card">
+                    <div class="icon">🏆</div>
+                    <h3>25+ Years</h3>
+                    <p>Over two decades of culinary excellence and dedication to authentic Italian traditions.</p>
+                </div>
+                <div class="about-card">
+                    <div class="icon">🌿</div>
+                    <h3>Fresh Daily</h3>
+                    <p>Locally sourced ingredients delivered fresh every morning for the best quality dishes.</p>
+                </div>
+                <div class="about-card">
+                    <div class="icon">❤️</div>
+                    <h3>Cozy Atmosphere</h3>
+                    <p>A warm and inviting ambiance perfect for romantic dinners and family gatherings.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section>
+        <div class="container">
+            <h2 class="section-title">Popular Dishes</h2>
+            <div class="menu-grid">
+                <a href="product.html?id=carbonara" class="menu-item" style="text-decoration: none; color: inherit;">
+                    <img src="https://images.unsplash.com/photo-1621996346565-e3dbc646d9a9?w=400" alt="Pasta">
+                    <div class="menu-item-content">
+                        <h3>Spaghetti Carbonara</h3>
+                        <p>Classic Roman pasta with eggs, pecorino cheese, guanciale, and black pepper</p>
+                        <div class="price">$22</div>
+                    </div>
+                </a>
+                <a href="product.html?id=margherita" class="menu-item" style="text-decoration: none; color: inherit;">
+                    <img src="https://images.unsplash.com/photo-1574071318508-1cdbab80d002?w=400" alt="Pizza">
+                    <div class="menu-item-content">
+                        <h3>Margherita Pizza</h3>
+                        <p>Fresh mozzarella, San Marzano tomatoes, basil, and extra virgin olive oil</p>
+                        <div class="price">$18</div>
+                    </div>
+                </a>
+                <a href="product.html?id=risotto" class="menu-item" style="text-decoration: none; color: inherit;">
+                    <img src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400" alt="Risotto">
+                    <div class="menu-item-content">
+                        <h3>Mushroom Risotto</h3>
+                        <p>Creamy Arborio rice with porcini mushrooms, parmesan, and white truffle oil</p>
+                        <div class="price">$24</div>
+                    </div>
+                </a>
+                <a href="product.html?id=risotto" class="menu-item" data-category="mains" style="text-decoration: none; color: inherit;">
+                    <img src="https://images.unsplash.com/photo-1546833999-b9f581a1996d?w=400" alt="Risotto">
+                    <div class="menu-item-content">
+                        <h3>Mushroom Risotto</h3>
+                        <p>Creamy Arborio rice with porcini mushrooms, parmesan, and white truffle oil</p>
+                        <div class="price">$24</div>
+                    </div>
+                </a>
+                <a href="product.html?id=ossobuco" class="menu-item" data-category="mains" style="text-decoration: none; color: inherit;">
+                    <img src="https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=400" alt="Osso Buco">
+                    <div class="menu-item-content">
+                        <h3>Osso Buco</h3>
+                        <p>Braised veal shanks with vegetables, white wine, and gremolata</p>
+                        <div class="price">$32</div>
+                    </div>
+                </a>
+                <a href="product.html?id=tiramisu" class="menu-item" data-category="desserts" style="text-decoration: none; color: inherit;">
+                    <img src="https://images.unsplash.com/photo-1571877227200-a0d98ea607e9?w=400" alt="Tiramisu">
+                    <div class="menu-item-content">
+                        <h3>Tiramisu</h3>
+                        <p>Classic Italian dessert with espresso-soaked ladyfingers and mascarpone</p>
+                        <div class="price">$12</div>
+                    </div>
+                </a>
+            </div>
+            <div style="text-align: center; margin-top: 50px;">
+                <a href="menu.html" class="btn btn-primary">View Full Menu</a>
+            </div>
+        </div>
+    </section>
+
+    
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>Bella Cucina has been serving authentic Italian cuisine for over 25 years. Our passion for food and dedication to quality make every dining experience unforgettable.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="menu.html">Menu</a>
+                <a href="about.html">About</a>
+                <a href="services.html">Services</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>123 Main Street<br>San Francisco, CA 94102</p>
+                <p>Phone: +1 (555) 012-3456</p>
+                <p>Email: info@bellacucina.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Bella Cucina. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="api-config.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>

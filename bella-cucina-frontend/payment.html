@@ -1,0 +1,148 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Payment - Bella Cucina</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <nav id="nav">
+        <div class="nav-container">
+            <a href="index.html" class="logo">Bella Cucina</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="menu.html">Menu</a></li>
+                <li><a href="about.html">About</a></li>
+                <li><a href="services.html">Services</a></li>
+                <li><a href="contact.html">Contact</a></li>
+            </ul>
+            <div class="nav-auth">
+                <a href="cart.html" class="auth-icon cart-icon-container" title="Cart">
+                    🛒
+                    <span class="cart-badge" id="cartCount">0</span>
+                </a>
+                <a href="login.html" class="auth-icon" title="Login">👤</a>
+            </div>
+        </div>
+    </nav>
+
+    <section class="hero" style="height: 40vh; background: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=1600') center/cover;">
+        <div class="hero-content">
+            <h1>Payment</h1>
+            <div class="decorative-line"></div>
+            <p class="tagline">SECURE CHECKOUT</p>
+        </div>
+    </section>
+
+    <section style="background: var(--light-gray); padding: 80px 40px;">
+        <div class="payment-container">
+            <form class="payment-form" onsubmit="processPayment(event)">
+                <h3>Payment Method</h3>
+
+                <div class="payment-methods">
+                    <div class="payment-method">
+                        <input type="radio" id="creditCard" name="paymentMethod" value="credit" checked>
+                        <label for="creditCard">
+                            <div class="payment-method-icon">💳</div>
+                            <div>Credit Card</div>
+                        </label>
+                    </div>
+                    <div class="payment-method">
+                        <input type="radio" id="debitCard" name="paymentMethod" value="debit">
+                        <label for="debitCard">
+                            <div class="payment-method-icon">💳</div>
+                            <div>Debit Card</div>
+                        </label>
+                    </div>
+                    <div class="payment-method">
+                        <input type="radio" id="paypal" name="paymentMethod" value="paypal">
+                        <label for="paypal">
+                            <div class="payment-method-icon">🅿️</div>
+                            <div>PayPal</div>
+                        </label>
+                    </div>
+                </div>
+
+                <div id="deliveryAddressDisplay">
+                    <!-- Delivery address will be displayed here -->
+                </div>
+
+                <h3 style="margin-top: 30px; margin-bottom: 20px;">Card Details</h3>
+
+                <div class="form-group">
+                    <label>Card Number *</label>
+                    <input type="text" required placeholder="1234 5678 9012 3456" maxlength="19" pattern="[0-9\s]{13,19}">
+                </div>
+
+                <div class="form-group">
+                    <label>Cardholder Name *</label>
+                    <input type="text" required placeholder="JOHN DOE">
+                </div>
+
+                <div class="card-row">
+                    <div class="form-group">
+                        <label>Expiry Date *</label>
+                        <input type="text" required placeholder="MM/YY" maxlength="5" pattern="(0[1-9]|1[0-2])\/[0-9]{2}">
+                    </div>
+                    <div class="form-group">
+                        <label>CVV *</label>
+                        <input type="text" required placeholder="123" maxlength="4" pattern="[0-9]{3,4}">
+                    </div>
+                </div>
+
+                <div class="form-group" style="margin-top: 20px;">
+                    <label style="display: flex; align-items: center; gap: 10px; cursor: pointer;">
+                        <input type="checkbox" required>
+                        <span>I agree to the <a href="#" style="color: var(--primary-gold);">Terms & Conditions</a> and <a href="#" style="color: var(--primary-gold);">Privacy Policy</a></span>
+                    </label>
+                </div>
+
+                <button type="submit" class="btn btn-primary" style="width: 100%; margin-top: 20px; font-size: 18px; padding: 18px;">
+                    Complete Order
+                </button>
+
+                <a href="checkout.html" class="btn btn-ghost" style="width: 100%; margin-top: 10px; text-align: center;">
+                    ← Back to Delivery Info
+                </a>
+
+                <div style="text-align: center; margin-top: 20px; color: var(--text-gray); font-size: 14px;">
+                    🔒 Your payment information is secure and encrypted
+                </div>
+            </form>
+
+            <div class="cart-summary" id="checkoutSummary">
+                <!-- Order summary will be inserted here by JavaScript -->
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <p>Bella Cucina has been serving authentic Italian cuisine for over 25 years. Our passion for food and dedication to quality make every dining experience unforgettable.</p>
+            </div>
+            <div class="footer-section">
+                <h3>Quick Links</h3>
+                <a href="menu.html">Menu</a>
+                <a href="about.html">About</a>
+                <a href="services.html">Services</a>
+                <a href="contact.html">Contact</a>
+            </div>
+            <div class="footer-section">
+                <h3>Contact</h3>
+                <p>123 Main Street<br>San Francisco, CA 94102</p>
+                <p>Phone: +1 (555) 012-3456</p>
+                <p>Email: info@bellacucina.com</p>
+            </div>
+        </div>
+        <div class="footer-bottom">
+            <p>&copy; 2026 Bella Cucina. All rights reserved.</p>
+        </div>
+    </footer>
+
+    <script src="api-config.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
