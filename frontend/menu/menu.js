@@ -1,97 +1,21 @@
-// API Configuration
-const API_BASE_URL = "http://localhost:3000/api";
-
-// Menu data cache (will be loaded from API)
-let foodData = {};
-let menuItemsArray = [];
-
-// Load menu from API
-async function loadMenuFromAPI() {
-  try {
-    const response = await fetch(`${API_BASE_URL}/menu`);
-    const data = await response.json();
-
-    if (data.success) {
-      // Convert array to object format for backward compatibility
-      menuItemsArray = data.items;
-      foodData = {};
-
-      data.items.forEach((item) => {
-        // Create multiple keys for compatibility:
-        // 1. Name-based key (carbonara, lasagna, etc.)
-        const nameKey = item.name.toLowerCase().replace(/\s+/g, "");
-        // 2. Database ID key
-        const dbKey = item.id.toString();
-
-        // Parse ingredients - handle both JSON and comma-separated strings
-        let ingredients = [];
-        if (item.ingredients) {
-          try {
-            ingredients = JSON.parse(item.ingredients);
-          } catch (e) {
-            ingredients = item.ingredients.split(",").map((i) => i.trim());
-          }
-        }
-
-        const itemData = {
-          id: item.id,
-          name: item.name,
-          category: item.category,
-          price: item.price,
-          image: item.image_url,
-          description: item.description,
-          ingredients: ingredients,
-        };
-
-        // Store with both keys
-        foodData[nameKey] = itemData;
-        foodData[dbKey] = itemData;
-      });
-
-      console.log("✅ Menu loaded from API:", data.items.length, "items");
-      return true;
-    } else {
-      console.error("❌ Failed to load menu:", data.error);
-      return false;
-    }
-  } catch (error) {
-    console.error("❌ API Error:", error);
-    return false;
-  }
-}
-
-// Cart Management
-let cart = JSON.parse(localStorage.getItem("cart")) || [];
+// Menu page specific code (uses utils.js for common functions)
 let currentQuantity = 1;
 
-// Initialize cart count on page load
+// Initialize on page load
 document.addEventListener("DOMContentLoaded", async function () {
-  // Load menu from API first
+  // Load menu from API first (from utils.js)
   await loadMenuFromAPI();
 
   updateCartCount();
+
+  // Render menu after loading
+  filterMenu("all");
 
   // Initialize counters
   document.querySelectorAll(".stat-number").forEach((counter) => {
     observer.observe(counter);
   });
 });
-
-// Update cart count in navigation
-function updateCartCount() {
-  const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-  const cartBadge = document.getElementById("cartCount");
-  if (cartBadge) {
-    cartBadge.textContent = cartCount;
-    cartBadge.style.display = cartCount > 0 ? "flex" : "none";
-  }
-}
-
-// Save cart to localStorage
-function saveCart() {
-  localStorage.setItem("cart", JSON.stringify(cart));
-  updateCartCount();
-}
 
 // Add to Cart
 function addToCart(foodId) {

@@ -36,34 +36,63 @@
 
     <section style="background: var(--light-gray); padding: 80px 40px;">
         <div class="success-container">
+            <!-- Success Icon & Message -->
             <div class="success-icon">✅</div>
             <h2>Thank You for Your Order!</h2>
             <p>Your order has been successfully placed and is being prepared by our chefs.</p>
             
-            <div class="order-number">
-                <p>Order Number</p>
-                <strong>#BC-<span id="orderNumber"></span></strong>
+            <!-- Order Number & Status -->
+            <div class="order-header">
+                <div class="order-number">
+                    <p>Order Number</p>
+                    <strong>#<span id="orderNumber">Loading...</span></strong>
+                </div>
+                <div style="margin-top: 15px;">
+                    <span id="orderStatus" class="status-badge">LOADING</span>
+                </div>
             </div>
 
-            <p style="margin-top: 30px;">
-                We've sent a confirmation email with your order details. You can expect your delivery within <strong>30-45 minutes</strong>.
-            </p>
-
-            <div style="background: var(--light-gray); padding: 20px; border-radius: 8px; margin: 30px 0; text-align: left;">
-                <h4 style="font-family: 'Playfair Display', serif; margin-bottom: 15px; text-align: center;">What's Next?</h4>
-                <p style="margin-bottom: 10px;">📧 Check your email for order confirmation</p>
-                <p style="margin-bottom: 10px;">👨‍🍳 Our chefs are preparing your food</p>
-                <p style="margin-bottom: 10px;">🚗 Your order will be delivered soon</p>
-                <p>📞 Contact us at +1 (555) 012-3456 for any questions</p>
+            <!-- Delivery Information Card -->
+            <div class="info-card">
+                <h3>📍 Delivery Information</h3>
+                <div id="deliveryInfo" class="card-content">
+                    <p>Loading delivery information...</p>
+                </div>
             </div>
 
+            <!-- Order Items Card -->
+            <div class="info-card">
+                <h3>🍽️ Order Items</h3>
+                <div id="orderItems" class="card-content">
+                    <p>Loading order items...</p>
+                </div>
+            </div>
+
+            <!-- Order Summary Card -->
+            <div class="info-card">
+                <h3>💰 Order Summary</h3>
+                <div id="orderSummary" class="card-content">
+                    <p>Loading summary...</p>
+                </div>
+            </div>
+
+            <!-- Delivery Timeline -->
+            <div style="background: #FFF9E6; padding: 25px; border-radius: 8px; margin: 30px 0; border-left: 4px solid var(--primary-gold);">
+                <h4 style="font-family: 'Playfair Display', serif; margin-bottom: 15px; color: var(--dark-gray);">📦 What's Next?</h4>
+                <p style="margin-bottom: 10px; color: var(--text-gray);">📧 Check your email for order confirmation</p>
+                <p style="margin-bottom: 10px; color: var(--text-gray);">👨‍🍳 Our chefs are preparing your food</p>
+                <p style="margin-bottom: 10px; color: var(--text-gray);">🚗 Your order will be delivered within <strong>30-45 minutes</strong></p>
+                <p style="color: var(--text-gray);">📞 Contact us at <strong>+1 (555) 012-3456</strong> for any questions</p>
+            </div>
+
+            <!-- Action Buttons -->
             <div style="display: flex; gap: 15px; justify-content: center; flex-wrap: wrap; margin-top: 40px;">
-                <a href="../home/index.html" class="btn btn-primary">Back to Home</a>
-                <a href="../menu/menu.html" class="btn btn-ghost">Order Again</a>
+                <a href="../menu/menu.html" class="btn btn-primary">Order Again</a>
+                <a href="../home/index.html" class="btn btn-ghost">Back to Home</a>
             </div>
 
             <p style="margin-top: 30px; font-size: 14px; color: var(--text-gray);">
-                Need help? Contact our support team at info@bellacucina.com
+                Need help? Contact our support team at <strong>info@bellacucina.com</strong>
             </p>
         </div>
     </section>
@@ -93,6 +122,7 @@
         </div>
     </footer>
 
+    <script src="../js/utils.js"></script>
     <script src="order-success.js"></script>
 </body>
 </html>

@@ -1,28 +1,11 @@
-// Cart Management
-let cart = JSON.parse(localStorage.getItem('cart')) || [];
-
-// Save cart to localStorage
-function saveCart() {
-    localStorage.setItem('cart', JSON.stringify(cart));
-    updateCartCount();
-}
-
-// Update cart count
-function updateCartCount() {
-    const cartCount = cart.reduce((total, item) => total + item.quantity, 0);
-    const cartBadge = document.getElementById('cartCount');
-    if (cartBadge) {
-        cartBadge.textContent = cartCount;
-        cartBadge.style.display = cartCount > 0 ? 'flex' : 'none';
-    }
-}
+// Cart page specific code (uses utils.js for common functions)
 
 // Remove from cart
 function removeFromCart(foodId) {
   const numericId = parseInt(foodId);
-  console.log('🗑️ Removing item:', numericId, 'from cart:', cart);
+  console.log("🗑️ Removing item:", numericId, "from cart:", cart);
   cart = cart.filter((item) => parseInt(item.id) !== numericId);
-  console.log('✅ Cart after removal:', cart);
+  console.log("✅ Cart after removal:", cart);
   saveCart();
   loadCartPage();
 }
@@ -40,18 +23,18 @@ function updateCartQuantity(foodId, change) {
 
 // Load cart page
 function loadCartPage() {
-  console.log('🔍 Loading cart page. Cart data:', cart);
-  console.log('🔍 Cart length:', cart.length);
-  console.log('🔍 Cart items:', JSON.stringify(cart, null, 2));
-  
+  console.log("🔍 Loading cart page. Cart data:", cart);
+  console.log("🔍 Cart length:", cart.length);
+  console.log("🔍 Cart items:", JSON.stringify(cart, null, 2));
+
   const cartItemsContainer = document.getElementById("cartItems");
   const cartSummary = document.getElementById("cartSummary");
 
-  console.log('🔍 Cart container:', cartItemsContainer);
-  console.log('🔍 Summary container:', cartSummary);
+  console.log("🔍 Cart container:", cartItemsContainer);
+  console.log("🔍 Summary container:", cartSummary);
 
   if (!cartItemsContainer || !cartSummary) {
-    console.error('❌ Cart containers not found!');
+    console.error("❌ Cart containers not found!");
     return;
   }
 
@@ -127,8 +110,8 @@ function loadCartPage() {
 }
 
 document.addEventListener("DOMContentLoaded", function () {
-  cart = JSON.parse(localStorage.getItem('cart')) || [];
-  console.log('📦 Cart loaded:', cart.length, 'items');
+  cart = JSON.parse(localStorage.getItem("cart")) || [];
+  console.log("📦 Cart loaded:", cart.length, "items");
   updateCartCount();
   loadCartPage();
 });
